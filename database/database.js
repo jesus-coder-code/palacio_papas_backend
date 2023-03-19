@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const userModel = require("../models/user.model");
+const productModel = require("../models/product.model")
 
 const sequelize = new Sequelize("jesusdaniel_palaciopapas", "304693_jesus", "51246380",{
     host: "mysql-jesusdaniel.alwaysdata.net",
@@ -7,6 +8,7 @@ const sequelize = new Sequelize("jesusdaniel_palaciopapas", "304693_jesus", "512
 })
 
 const User = userModel(sequelize, Sequelize)
+const Product = productModel(sequelize, Sequelize)
 
 sequelize.sync({ force: false }).then(() => {
     console.log("conectado");
@@ -14,4 +16,5 @@ sequelize.sync({ force: false }).then(() => {
 
 module.exports ={
     User,
+    Product,
 }

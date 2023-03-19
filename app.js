@@ -1,5 +1,6 @@
 const express = require("express")
 const user = require("./routes/user");
+const product = require("./routes/product")
 const port = process.env.PORT || 5000
 
 require("./database/database")
@@ -12,7 +13,8 @@ app.get("/", (req,res) =>{
     res.send({message:"palacio de las papas"})
 })
 
-app.use("/user", user)
+app.use("/users", user)
+app.use("/products", product)
 
 app.listen(port, () =>{
     console.log("server is running on port:", port)
