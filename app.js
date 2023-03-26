@@ -1,7 +1,7 @@
 const express = require("express")
 const user = require("./routes/user");
 const product = require("./routes/product")
-const port = process.env.PORT || 5000
+const port = process.env.PORT || 3000
 
 require("./database/database")
 
