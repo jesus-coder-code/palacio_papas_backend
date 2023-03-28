@@ -1,5 +1,7 @@
-const jwt = require("jwt-simple");
 const moment = require("moment");
+const jwt = require("jsonwebtoken")
+
+
 
 const checkToken = (req, res, next) => {
   if (!req.headers["user-token"]) {
@@ -10,6 +12,7 @@ const checkToken = (req, res, next) => {
   let payload = {};
   try {
     payload = jwt.decode(userToken, "secret Key");
+    res.json({payload})
   } catch (error) {
     console.log(error);
     return res.json({ message: "token incorrecto" });
@@ -20,9 +23,31 @@ const checkToken = (req, res, next) => {
   }
 
   req.userId = payload.userId;
+  req.user = payload.user
+  req.password = payload.password
 
   next();
 };
+
+function decodeToken(req, res) {
+  /*const token = req.headers["user-token"]
+  const decoded = jwt.decode(token, { complete: true });
+  const header = decoded.header
+  console.log(JSON.stringify(req.header))
+  res.json(JSON.stringify(req.header))*/
+  
+
+  const userToken = req.headers["user-token"];
+  let payload = {};
+  try {
+    payload = jwt.decode(userToken, "secret Key");
+    res.json({payload})
+  } catch (error) {
+    console.log(error);
+    return res.json({ message: "token incorrecto" });
+  }
+
+}
 
 module.exports = {
   checkToken: checkToken,

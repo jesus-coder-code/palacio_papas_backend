@@ -24,7 +24,7 @@ const loginUser = async (req, res) =>{
             const password = bcrypt.compareSync(req.body.password, user.password)
 
             if (password){
-                res.json({token: generateToken(user)})
+                res.json({token: generateToken(user, password)})
                 console.log("usuario logeado")
             } else{
                 res.json({message:"contraseña incorrecta"})
