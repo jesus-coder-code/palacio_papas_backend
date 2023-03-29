@@ -12,7 +12,7 @@ const checkToken = (req, res, next) => {
   let payload = {};
   try {
     payload = jwt.decode(userToken, "secret Key");
-    res.json({payload})
+    //res.json({payload})
   } catch (error) {
     console.log(error);
     return res.json({ message: "token incorrecto" });
@@ -23,32 +23,38 @@ const checkToken = (req, res, next) => {
   }
 
   req.userId = payload.userId;
-  req.user = payload.user
-  req.password = payload.password
 
   next();
 };
 
-function decodeToken(req, res) {
-  /*const token = req.headers["user-token"]
-  const decoded = jwt.decode(token, { complete: true });
-  const header = decoded.header
-  console.log(JSON.stringify(req.header))
-  res.json(JSON.stringify(req.header))*/
-  
-
-  const userToken = req.headers["user-token"];
-  let payload = {};
-  try {
-    payload = jwt.decode(userToken, "secret Key");
-    res.json({payload})
-  } catch (error) {
-    console.log(error);
-    return res.json({ message: "token incorrecto" });
+const decodeToken = (req, res, next) =>{
+  if(!req.headers["verification"]) {
+    return res.json({message:"necesitas un token"})
   }
 
+  const verification = req.headers["verification"]
+  let authData = {}
+  try{
+    authData = jwt.decode(verification, "secret key")
+    res.json({authData})
+  }catch(error){
+    console.log(error)
+    return res.json({message:"token incorrecto"})
+  }
+
+  if(authData.expiredAt < moment().unix()){
+    return res.json({message:"token ha expirado"})
+  }
+
+  req.userId = authData.userId
+  req.email = authData.email
+  req.user = authData.user
+  req.password = authData.password
+
+  next()
 }
 
 module.exports = {
   checkToken: checkToken,
+  decodeToken: decodeToken
 };

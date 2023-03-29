@@ -1,6 +1,8 @@
 const {User} = require("../database/database")
 const bcrypt = require("bcrypt");
 const { generateToken, } = require("../middlewares/jwt/generateToken");
+const createError = require("http-errors")
+
 //const checkToken = require("../middlewares/jwt/checkToken");
 //const jwt = require("jwt-simple")
 
@@ -39,16 +41,17 @@ const loginUser = async (req, res) =>{
     }
 }
 
-/*const Auth = async (req, res) =>{
-  jwt.verify(req.token, 'secret key', (error, authData)=>{
-    if(error){
-        res.sendStatus(403)
+/*const logoutUser = async (req, res, next) =>{
+    try{
+        const {refreshToken} = req.body
+        if(!refreshToken){
+        }
+    }catch(error){
+        res.json({error})
     }
-    else{
-        res.json({authData})
-    }
-  })
 }*/
+
+
 
 
 module.exports = {
