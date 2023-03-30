@@ -1,7 +1,9 @@
 const {User} = require("../database/database")
 const bcrypt = require("bcrypt");
 const { generateToken, } = require("../middlewares/jwt/generateToken");
-const createError = require("http-errors")
+//const createError = require("http-errors")
+const jwt = require("jsonwebtoken")
+const {Blacklist} = require("../database/database")
 
 //const checkToken = require("../middlewares/jwt/checkToken");
 //const jwt = require("jwt-simple")
@@ -41,15 +43,21 @@ const loginUser = async (req, res) =>{
     }
 }
 
-/*const logoutUser = async (req, res, next) =>{
+const logoutUser = async (req, res, next) =>{
     try{
-        const {refreshToken} = req.body
-        if(!refreshToken){
-        }
+        const token = req.cookies.token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        await Blacklist.create({ userId: decoded.id, jti: decoded.jti });
+        res.clearCookie('jwt')
+        res.json({message:"se ha cerrado la sesion"})
+        
+
     }catch(error){
+        console.log(error)
         res.json({error})
     }
-}*/
+}
+
 
 
 
@@ -57,6 +65,6 @@ const loginUser = async (req, res) =>{
 module.exports = {
     createUser,
     loginUser,
-    //Auth,
+    logoutUser
 }
 
