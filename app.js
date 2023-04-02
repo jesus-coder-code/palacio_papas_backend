@@ -1,4 +1,5 @@
 const express = require("express")
+const cors = require("cors")
 const user = require("./routes/user");
 const product = require("./routes/product")
 const port = process.env.PORT || 3000
@@ -7,6 +8,7 @@ require("./database/database")
 
 const app = express()
 
+app.use(cors())
 app.use(express.json())
 
 app.get("/", (req,res) =>{

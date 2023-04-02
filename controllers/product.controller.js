@@ -3,7 +3,12 @@ const {Product} = require("../database/database")
 const getProduct = async (req, res) =>{
     try{
         const product = await Product.findAll()
-        res.json(product)
+        if(product){
+            res.json(product)
+        }
+        else{
+            res.json({message:"sin productos"})
+        }
     } catch(error){
         res.json({message: error})
         console.log(error)
@@ -13,7 +18,12 @@ const getProduct = async (req, res) =>{
 const getProductByName = async (req, res) =>{
     try{
         const productName = await Product.findAll({where: {name: req.params.name}})
-        res.json(productName)
+        if(productName){
+            res.json(productName)
+        }
+        else{
+            res.json({message:"no se ha encontrado este producto"})
+        }
     } catch (error) {
         res.json({message: error})
         console.log(error)
