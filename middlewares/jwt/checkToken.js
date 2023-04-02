@@ -7,6 +7,15 @@ const checkToken = (req, res, next) => {
   if (!req.headers["Authorization"]) {
     return res.status(400);
   }
+  /*try{
+    const head = req.headers["Authorization"]
+    if(!head){
+      res.status(400).json()
+    }
+  }catch(error){
+    res.json({message:error})
+  }*/
+  
 
   const userToken = req.headers["Authorization"];
   let payload = {};
@@ -28,14 +37,23 @@ const checkToken = (req, res, next) => {
 };
 
 const decodeToken = (req, res, next) =>{
-  if(!req.headers["Authorization"]) {
+  /*if(!req.headers["Authorization"]) {
     return res.status(400)
+  }*/
+  try{
+    const head = req.headers["Authorization"]
+    if(!head){
+      return res.status(400).json()
+    }
+  }catch(error){
+    res.json({message:error})
   }
 
   const verification = req.headers["Authorization"]
   let authData = {}
   try{
     authData = jwt.decode(verification, "secret key")
+    //retornar datos de usuario
     res.json({authData})
   }catch(error){
     console.log(error)
