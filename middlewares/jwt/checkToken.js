@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken")
 
 const checkToken = (req, res, next) => {
   if (!req.headers["Authorization"]) {
-    return res.json({ message: "es necesario un token" });
+    return res.status(400);
   }
 
   const userToken = req.headers["Authorization"];
@@ -29,7 +29,7 @@ const checkToken = (req, res, next) => {
 
 const decodeToken = (req, res, next) =>{
   if(!req.headers["Authorization"]) {
-    return res.json({message:"necesitas un token"})
+    return res.status(400)
   }
 
   const verification = req.headers["Authorization"]
