@@ -4,11 +4,11 @@ const jwt = require("jsonwebtoken")
 
 
 const checkToken = (req, res, next) => {
-  if (!req.headers["user-token"]) {
+  if (!req.headers["Authorization"]) {
     return res.json({ message: "es necesario un token" });
   }
 
-  const userToken = req.headers["user-token"];
+  const userToken = req.headers["Authorization"];
   let payload = {};
   try {
     payload = jwt.decode(userToken, "secret Key");
@@ -28,11 +28,11 @@ const checkToken = (req, res, next) => {
 };
 
 const decodeToken = (req, res, next) =>{
-  if(!req.headers["verification"]) {
+  if(!req.headers["Authorization"]) {
     return res.json({message:"necesitas un token"})
   }
 
-  const verification = req.headers["verification"]
+  const verification = req.headers["Authorization"]
   let authData = {}
   try{
     authData = jwt.decode(verification, "secret key")
