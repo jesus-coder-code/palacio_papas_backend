@@ -11,7 +11,7 @@ const generateToken = (User) => {
     createdAt: moment().unix(),
     expiredAt: moment().add(24, "hours").unix(),
   };
-  return jwt.encode(payload, "secret Key");
+  return jwt.encode(payload, "secretKey");
 };
 
 module.exports = {
