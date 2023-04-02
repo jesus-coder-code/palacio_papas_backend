@@ -4,7 +4,13 @@ const getProduct = async (req, res) =>{
     try{
         const product = await Product.findAll()
         if(product){
-            res.json(product)
+            /*const data = [
+                product
+            ]*/
+            //res.json({status:"success", data:{product}, message:"todos los productos"})
+            res.status(200).json({data:product, message:"success"})
+            //res.status(200).send({data:product})
+            
         }
         else{
             res.json({message:"sin productos"})

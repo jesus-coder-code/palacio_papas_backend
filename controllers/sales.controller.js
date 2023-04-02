@@ -16,7 +16,8 @@ const getSale = async (req, res) => {
     }catch(error){
         const sale = await Sales.findAll()
         if(sale){
-            res.json(sale)
+            //res.json(sale)
+            res.status(200).json({data:sale, message:"success"})
         }
         else{
             res.json({message:"sin registro de ventas"})
