@@ -12,16 +12,16 @@ const createSale = async (req, res) =>{
 
 const getSale = async (req, res) => {
     try{
-
-    }catch(error){
         const sale = await Sales.findAll()
-        if(sale){
-            //res.json(sale)
-            res.status(200).json({data:sale, message:"success"})
-        }
-        else{
+        if(!sale){
             res.json({message:"sin registro de ventas"})
         }
+        else{
+            res.status(200).json({data:sale, message:"success"})
+        }
+    }catch(error){
+        res.json({message:error})
+        console.log(error)
     }
 }
 

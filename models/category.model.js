@@ -10,6 +10,10 @@ module.exports = (sequelize, type) =>{
         name: {
             type: type.STRING,
             allowNulL: false
+        },
+
+        description: {
+            type: type.STRING,
         }
     })
 }

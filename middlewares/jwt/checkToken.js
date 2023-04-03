@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken")
 
 const checkToken = (req, res, next) => {
   if (!req.headers["verification"]) {
+    res.json({message:"debes logearte"})
     return res.status(400);
   }
   /*try{
@@ -28,7 +29,7 @@ const checkToken = (req, res, next) => {
   }
 
   if (payload.expiredAt < moment().unix()) {
-    return res.json({ message: "token expirado" });
+    return res.json({ message: "la sesion ha expirado" });
   }
 
   req.userId = payload.userId;
@@ -38,6 +39,7 @@ const checkToken = (req, res, next) => {
 
 const decodeToken = (req, res, next) =>{
   if(!req.headers["verification"]) {
+    res.json({message:"necesitas un token"})
     return res.status(400).json()
   }
   /*try{
@@ -63,7 +65,7 @@ const decodeToken = (req, res, next) =>{
   }
 
   if(authData.expiredAt < moment().unix()){
-    return res.json({message:"token ha expirado"})
+    return res.json({message:"la sesion ha expirado"})
   }
 
   req.userId = authData.userId

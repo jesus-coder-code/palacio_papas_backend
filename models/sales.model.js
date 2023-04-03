@@ -8,7 +8,7 @@ module.exports = (sequelize, type) => {
         },
 
         product_name: {
-            type: type.INTEGER,
+            type: type.STRING,
             allowNull: false,
         },
 
@@ -22,10 +22,10 @@ module.exports = (sequelize, type) => {
             allowNull: false,
         },
 
-        sale_date: {
+        /*sale_date: {
             type: type.DATE,
             allowNull: false
-        }
+        }*/
 
     })
 }
