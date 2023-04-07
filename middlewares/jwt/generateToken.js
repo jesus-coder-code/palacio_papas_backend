@@ -9,7 +9,7 @@ const generateToken = (User) => {
     user: User.user,
     password: User.password,
     createdAt: moment().unix(),
-    expiredAt: moment().add(24, "hours").unix(),
+    expiredAt: moment().add(2, "hours").unix(),
   };
   return jwt.encode(payload, "secretKey");
 };

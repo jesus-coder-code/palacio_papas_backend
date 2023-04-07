@@ -1,10 +1,6 @@
 const {User} = require("../database/database")
 const bcrypt = require("bcrypt");
 const { generateToken, } = require("../middlewares/jwt/generateToken");
-const cookie = require("cookie")
-//const createError = require("http-errors")
-const jwt = require("jsonwebtoken")
-const {Blacklist} = require("../database/database")
 
 //const checkToken = require("../middlewares/jwt/checkToken");
 //const jwt = require("jwt-simple")
@@ -40,6 +36,11 @@ const loginUser = async (req, res) =>{
             const password = bcrypt.compareSync(req.body.password, user.password)
 
             if (password){
+                res.cookie('cookie', generateToken, {
+                    maxAge: null,
+                    httpOnly: true,
+                    secure: true
+                })
                 res.json({token: generateToken(user, password)})
                 console.log("usuario logeado")
             } else{
@@ -55,20 +56,12 @@ const loginUser = async (req, res) =>{
     }
 }
 
-const logoutUser = async (req, res, next) =>{
-    try{
-        const tokenblock = req.headers["verification"]
-        await Blacklist.create({token: tokenblock})
-        res.json({message: "ha cerrado sesion correctamente"})
-
-    }catch(error){
-        console.log(error)
-        res.json({error})
-    }
-    next()
+const logoutUser = async (req, res) =>{
+    res.clearCookie('cookie')
+    res.status(200).json({message:"ha cerrado sesion"})
 }
 
-const blacklistToken = async (req, res, next) =>{
+/*const blacklistToken = async (req, res, next) =>{
     try{
       const {token} = req.headers
       const searchToken = await Blacklist.findOne({where:{token}})
@@ -81,7 +74,17 @@ const blacklistToken = async (req, res, next) =>{
     }catch(error){
         res.json({error})
     }
-  }
+  }*/
+
+/*async function blacklistToken(req, res, next){
+    const {token} = req.headers
+    const searchToken = await Blacklist.findOne({where:{token}})
+    if(searchToken){
+        res.status(401).json({message:"vuelva a iniciar sesion"})
+    } else{
+        next()
+    }
+}*/
 
 
 
@@ -90,6 +93,6 @@ module.exports = {
     createUser,
     loginUser,
     logoutUser, 
-    blacklistToken
+    //blacklistToken
 }
 
