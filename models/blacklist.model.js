@@ -4,11 +4,17 @@ module.exports = (sequelize, type) => {
             type: type.INTEGER,
             primaryKey: true,
             allowNull: false,
+            autoIncrement: true
         },
 
-        jti: {
+        token:{
             type: type.STRING,
             allowNull: false
+        },
+
+        expiredAt: {
+            type: type.DATE,
+            allowNull: true
         }
     })
 }

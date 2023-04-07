@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken")
 
 users.post("/register", validateUser, createUser)
 users.post("/login", loginUser)
-//users.post("/logout", logoutUser)
+users.post("/logout", logoutUser)
 users.get("/login/auth", decodeToken)
 
 

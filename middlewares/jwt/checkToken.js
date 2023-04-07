@@ -76,6 +76,7 @@ const decodeToken = (req, res, next) =>{
   next()
 }
 
+
 module.exports = {
   checkToken: checkToken,
   decodeToken: decodeToken

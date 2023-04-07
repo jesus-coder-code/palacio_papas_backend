@@ -8,14 +8,15 @@ const {
     createProduct,
     updateProduct
 } = require("../controllers/product.controller")
+const { blacklistToken } = require("../controllers/user.controller")
 
-products.get("/getProducts", checkToken, getProduct)
+products.get("/getProducts",checkToken, getProduct, blacklistToken)
 
-products.get("/getProducts:name", checkToken, getProductByName)
+products.get("/getProducts:name", checkToken, getProductByName, blacklistToken)
 
-products.post("/createProduct", checkToken, validateProduct, createProduct)
+products.post("/createProduct", blacklistToken, checkToken, validateProduct, createProduct)
 
-products.put("/updateProduct", checkToken, validateProduct, updateProduct)
+products.put("/updateProduct", checkToken, validateProduct, updateProduct, blacklistToken)
 
 
 module.exports = products
