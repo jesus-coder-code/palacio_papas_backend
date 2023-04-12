@@ -1,26 +1,15 @@
-const {User} = require("../database/database")
+const {PrismaClient} = require("@prisma/client")
 const bcrypt = require("bcrypt");
-const { generateToken, } = require("../middlewares/jwt/generateToken");
+const { generateToken, } = require("../utils/jwt/generateToken");
 
-//const checkToken = require("../middlewares/jwt/checkToken");
-//const jwt = require("jwt-simple")
+const prisma = new PrismaClient()
 
 const createUser = async (req, res) => {
+    //await prisma.$connect()
+    //await prisma.$disconnect()
     try {
-        /*const user = User.findOne({where:{user: req.body.user}})
-        const email = User.findOne({where:{email: req.body.email}})
-        if(email){
-            res.json({message: "este email ya esta en uso"})
-        } 
-        if (user){
-            res.json({message: "este usuario ya existe"})
-        }else{
-            req.body.password = bcrypt.hashSync(req.body.password, 10);
-            await User.create(req.body)
-            res.json({message: "usario creado"})
-        }*/
         req.body.password = bcrypt.hashSync(req.body.password, 10);
-        await User.create(req.body);
+        await prisma.user.create({data:req.body});
         res.json({ message: "usuario registrado" });
     } catch (error) {
       res.json({ message: error });
@@ -30,7 +19,12 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) =>{
     try {
-        const user = await User.findOne({where: {user: req.body.user}})
+        const {username} = req.body
+        const user = await prisma.user.findUnique({
+            where:{
+                username,
+            }
+        })
 
         if (user){
             const password = bcrypt.compareSync(req.body.password, user.password)
@@ -61,30 +55,6 @@ const logoutUser = async (req, res) =>{
     res.status(200).json({message:"ha cerrado sesion"})
 }
 
-/*const blacklistToken = async (req, res, next) =>{
-    try{
-      const {token} = req.headers
-      const searchToken = await Blacklist.findOne({where:{token}})
-      if(searchToken){
-        res.status(401).json({message:"vuelva a iniciar sesion"})
-      }
-      else{
-        next()
-      }
-    }catch(error){
-        res.json({error})
-    }
-  }*/
-
-/*async function blacklistToken(req, res, next){
-    const {token} = req.headers
-    const searchToken = await Blacklist.findOne({where:{token}})
-    if(searchToken){
-        res.status(401).json({message:"vuelva a iniciar sesion"})
-    } else{
-        next()
-    }
-}*/
 
 
 

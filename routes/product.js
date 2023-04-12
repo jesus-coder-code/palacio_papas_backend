@@ -1,7 +1,8 @@
 const express = require("express")
 const products = express.Router()
-const {validateProduct} = require("../middlewares/validators/product.validator")
-const {checkToken} = require("../middlewares/jwt/checkToken")
+const {validateProduct} = require("../utils/validators/product.validator")
+//const {requireRole} = require("../utils/auth/auth")
+const {checkToken, requireRole} = require("../utils/jwt/checkToken")
 const {
     getProduct,
     getProductByName,
@@ -10,7 +11,7 @@ const {
 } = require("../controllers/product.controller")
 //const { blacklistToken } = require("../controllers/user.controller")
 
-products.get("/getProducts",checkToken, getProduct)
+products.get("/getProducts",checkToken, requireRole('Admin'), getProduct)
 
 products.get("/getProducts:name",checkToken, getProductByName)
 

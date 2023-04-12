@@ -1,4 +1,3 @@
-const {Sales} = require("../database/database")
 
 const createSale = async (req, res) =>{
     try{

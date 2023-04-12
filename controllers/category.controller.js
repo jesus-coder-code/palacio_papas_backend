@@ -1,8 +1,10 @@
-const {Category} = require("../database/database")
+const {PrismaClient} = require("@prisma/client")
+
+const prisma = new PrismaClient()
 
 const createCategory = async (req, res) =>{
     try{
-        await Category.create(req.body)
+        await prisma.category.create({data:req.body})
         res.json({message:"categoria creada"})
     }catch(error){
         res.json({message:error})
@@ -11,7 +13,7 @@ const createCategory = async (req, res) =>{
 
 const getCategory = async (req, res) =>{
     try{
-        const category = await Category.findAll()
+        const category = await prisma.category.findMany()
         if(category){
             //res.json(category)
             res.status(200).json({data:category, message:"success"})

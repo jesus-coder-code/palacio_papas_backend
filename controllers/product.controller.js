@@ -1,8 +1,10 @@
-const {Product} = require("../database/database")
+const {PrismaClient} = require("@prisma/client")
+
+const prisma = new PrismaClient()
 
 const getProduct = async (req, res) =>{
     try{
-        const product = await Product.findAll()
+        const product = await prisma.product.findMany()
         if(product){
             /*const data = [
                 product
@@ -23,9 +25,14 @@ const getProduct = async (req, res) =>{
 
 const getProductByName = async (req, res) =>{
     try{
-        const productName = await Product.findAll({where: {name: req.params.name}})
+        const {name} = req.params
+        const productName = await prisma.product.findMany({
+            where:{
+                name
+            }
+        })
         if(productName){
-            res.json(productName)
+            res.status(200).json({data:productName, message:"success"})
         }
         else{
             res.json({message:"no se ha encontrado este producto"})
@@ -38,7 +45,15 @@ const getProductByName = async (req, res) =>{
 
 const createProduct = async (req, res) =>{
     try{
-        await Product.create(req.body)
+        const {name, price, quantity, categoryId} = req.body
+        await prisma.product.create({
+            data:{
+                name,
+                price,
+                quantity,
+                category:{connect:{id: categoryId}}
+            }
+        })
         res.json({message:"producto creado"})
     }catch(error){
         res.json({message: error})

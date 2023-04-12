@@ -5,9 +5,9 @@ const product = require("./routes/product");
 const category = require("./routes/category");
 const sale = require("./routes/sale")
 const cookieParser = require("cookie-parser")
+const session = require("express-session")
 const port = process.env.PORT || 3000
-
-require("./database/database")
+//require("./database/database")
 
 const app = express()
 
@@ -15,6 +15,11 @@ app.use(cookieParser())
 
 app.use(cors())
 app.use(express.json())
+app.use(session({
+    secret:"secret",
+    resave:false,
+    saveUninitialized:true
+}))
 
 app.get("/", (req,res) =>{
     res.send({message:"palacio de las papas"})
