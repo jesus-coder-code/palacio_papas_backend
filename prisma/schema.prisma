@@ -6,39 +6,36 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
 }
 
 model User {
-  id Int @id @unique @default(autoincrement())
-  email String @unique
+  id       Int    @id @unique @default(autoincrement())
+  email    String @unique
   username String @unique
   password String
-  role Role @default(Admin)
+  role     Role   @default(Admin)
 }
 
-enum Role{
+enum Role {
   Admin
   Cashier
 }
 
-
 model Category {
-  id Int @id @default(autoincrement())
-  name String
+  id          Int       @id @default(autoincrement())
+  name        String
   description String
-  products Product[]
+  products    Product[]
 }
 
 model Product {
-  id Int @id @default(autoincrement())
-  name String
-  price Int
-  quantity Int
+  id         Int      @id @default(autoincrement())
+  name       String
+  price      Int
+  quantity   Int
   categoryId Int
-  category Category @relation(fields: [categoryId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
+
 }
-
-
