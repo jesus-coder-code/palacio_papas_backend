@@ -45,16 +45,29 @@ const getProductByName = async (req, res) =>{
 
 const createProduct = async (req, res) =>{
     try{
-        const {name, price, quantity, categoryId} = req.body
+        const category = req.body.category
+        const product = req.body.product
+        //const {categoryName} = req.body
+        await prisma.category.create({
+            data: category
+        })
+
+        await prisma.product.create({
+            data: product
+        })
+
+        /*const {name, price, quantity, categoryId} = req.body
         await prisma.product.create({
             data:{
                 name,
                 price,
                 quantity,
-                category:{connect:{id: categoryId}}
+                category:{connect:{
+                    id: categoryId
+                }}
             }
-        })
-        res.json({message:"producto creado"})
+        })*/
+        res.json({message:"producto creado y categoria creada"})
     }catch(error){
         res.json({message: error})
         console.log(error)

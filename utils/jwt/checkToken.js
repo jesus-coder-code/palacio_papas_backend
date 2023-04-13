@@ -53,67 +53,53 @@ const decodeToken = (req, res, next) =>{
 
   req.userId = authData.userId
   req.email = authData.email
-  req.user = authData.user
+  req.username = authData.username
   req.password = authData.password
   req.role = authData.role
 
   next()
 }
 
-/*const requireRole = async (role, req, res, next) =>{
-  const roleVerification = req.headers["verification"]
+
+function verifyToken(req, res, next) {
+  // Obtener el token de la cabecera de la solicitud
+  const token = req.headers['verification'];
   try{
-    const decoded = jwt.decode(roleVerification, "secretKey")
-    const usuario = await prisma.user.findUnique({
-      where:{
-        id: decoded.id
-      }
-    })
-    if(usuario.role === role){
-      next()
-    }else{
-      res.status(401).json({message:"No esta autorizado"})
-    }
-  }catch(error){
-    console.log(error)
-    res.json({error})
-
-  }
-}*/
-
-function requireRole(role) {
-  return async (req, res, next) => {
-    //const token = req.headers.authorization;
-    /*const token = req.headers["verification"]
     if (!token) {
-      return res.status(401).json({ mensaje: "Acceso denegado. Token no proporcionado." });
-    }*/
-
-    try {
-      const authHeader = req.headers['verification'];
-      const token = authHeader && authHeader.split(' ')[1];
-      const decoded = jwt.decode(token, "secretKey");
-      //const userId = decoded.id
-      const usuario = await prisma.user.findUnique({
-        where: { id: 1 },
-      });
-      if (usuario.role === role) {
-        next();
-      } else {
-        res.status(401).json({message:"no esta autorizado"});
-      }
-    } catch (error) {
-      res.status(400).json({ mensaje: "error" });
-      console.log(error)
+      return res.status(401).send({ message: 'No se proporcionó un token de autenticación.' });
     }
-  };
+  
+    // Verificar el token
+    jwt.verify(token, "secretKey", (err, decoded) => {
+      if (err) {
+        return res.status(401).send({ message: 'El token de autenticación es inválido.' });
+      }
+      // Agregar el id del usuario al objeto de solicitud
+      req.userId = decoded.id;
+      req.userRole = decoded.role;
+  
+      next();
+    });
+  }catch(error){
+    res.status(400).json({message:error})
+    console.log(error)
+  }
 }
-
+function hasRole(role) {
+  return (req, res, next) => {
+    if (req.userRole !== role) {
+      res.status(403).json({ message: 'No eres administrador' });
+    }else{
+      next()
+    }
+  }
+}
 
 
 
 module.exports = {
   checkToken: checkToken,
   decodeToken: decodeToken,
-  requireRole: requireRole
+  hasRole: hasRole,
+  verifyToken: verifyToken
 };
