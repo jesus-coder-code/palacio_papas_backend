@@ -15,9 +15,9 @@ products.get("/getProducts",checkToken,verifyToken, hasRole('Admin'), getProduct
 
 products.get("/getProducts:name",checkToken, verifyToken, hasRole('Admin'),getProductByName)
 
-products.post("/createProduct", checkToken, verifyToken, hasRole('Admin'),createProduct)
+products.post("/createProduct", checkToken, verifyToken, validateProduct, hasRole('Admin'),createProduct)
 
-products.put("/updateProduct",checkToken, validateProduct, updateProduct)
+products.put("/updateProduct",checkToken, hasRole('Admin'), updateProduct)
 
 
 module.exports = products

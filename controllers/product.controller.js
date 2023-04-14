@@ -6,12 +6,7 @@ const getProduct = async (req, res) =>{
     try{
         const product = await prisma.product.findMany()
         if(product){
-            /*const data = [
-                product
-            ]*/
-            //res.json({status:"success", data:{product}, message:"todos los productos"})
             res.status(200).json({data:product, message:"success"})
-            //res.status(200).send({data:product})
             
         }
         else{
@@ -45,7 +40,7 @@ const getProductByName = async (req, res) =>{
 
 const createProduct = async (req, res) =>{
     try{
-        const category = req.body.category
+        /*const category = req.body.category
         const product = req.body.product
         //const {categoryName} = req.body
         await prisma.category.create({
@@ -54,20 +49,22 @@ const createProduct = async (req, res) =>{
 
         await prisma.product.create({
             data: product
-        })
+        })*/
 
-        /*const {name, price, quantity, categoryId} = req.body
+        const {name, price, quantity, categoryId} = req.body
         await prisma.product.create({
-            data:{
+            data: {
                 name,
                 price,
                 quantity,
-                category:{connect:{
-                    id: categoryId
-                }}
+                category: {
+                    connect: {
+                        id: categoryId
+                    }
+                }
             }
-        })*/
-        res.json({message:"producto creado y categoria creada"})
+        })
+        res.status(200).json({message:"producto creado"})
     }catch(error){
         res.json({message: error})
         console.log(error)

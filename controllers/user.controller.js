@@ -5,12 +5,10 @@ const { generateToken, } = require("../utils/jwt/generateToken");
 const prisma = new PrismaClient()
 
 const createUser = async (req, res) => {
-    //await prisma.$connect()
-    //await prisma.$disconnect()
     try {
         req.body.password = bcrypt.hashSync(req.body.password, 10);
         await prisma.user.create({data:req.body});
-        res.json({ message: "usuario registrado" });
+        res.status(200).json({ message: "usuario registrado" });
     } catch (error) {
       res.json({ message: error });
       console.log(error);
@@ -55,14 +53,26 @@ const logoutUser = async (req, res) =>{
     res.status(200).json({message:"ha cerrado sesion"})
 }
 
-
-
+const registerCashier = async (req, res) =>{
+    try{
+        req.body.password = bcrypt.hashSync(req.body.password, 10)
+        const cashier = await prisma.user.create({data:req.body})
+        if(cashier){
+            res.status(200).json({message:"cajero registrado"})
+        }else{
+            res.json({message:"no se pudo registar cajero"})
+        }
+    }catch(error){
+        res.status(500).json({message:"ha ocurrido un error al registrar el cajero"})
+        console.log(error)
+    }
+}
 
 
 module.exports = {
     createUser,
     loginUser,
     logoutUser, 
-    //blacklistToken
+    registerCashier
 }
 

@@ -22,14 +22,33 @@ const getCategory = async (req, res) =>{
             res.json({message:"no hay categorias"})
         }
     } catch(error){
-        res.json({message: error})
+        res.status(500).json({message: error})
         console.log(error)
     }
 }
 
-
+const updateCategory = async (req, res) =>{
+    try{
+        const {name, description} = req.body
+        const {id} = req.params
+        await prisma.category.update({
+            where:{
+                id: parseInt(id)
+            },
+            data:{
+                name,
+                description
+            }
+        })
+        res.status(200).json({message:"categoria actualizada"})
+    }catch(error){
+        res.status(500).json({message:error})
+        console.log(error)
+    }
+}
 
 module.exports = {
     createCategory,
-    getCategory
+    getCategory,
+    updateCategory
 }

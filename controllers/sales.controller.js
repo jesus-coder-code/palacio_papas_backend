@@ -1,16 +1,17 @@
 
 const createSale = async (req, res) =>{
-    try{
+    /*try{
         await Sales.create(req.body)
         res.json({message:"venta creada satisfactoriamente"})
     }catch(error){
         res.json({message:error})
         console.log(error)
-    }
+    }*/
+    res.status(200).json({message:"aqui se crean las ventas"})
 }
 
 const getSale = async (req, res) => {
-    try{
+    /*try{
         const sale = await Sales.findAll()
         if(!sale){
             res.json({message:"sin registro de ventas"})
@@ -21,7 +22,8 @@ const getSale = async (req, res) => {
     }catch(error){
         res.json({message:error})
         console.log(error)
-    }
+    }*/
+    res.status(200).json({message:"aqui se muestran las ventas"})
 }
 
 module.exports = {
