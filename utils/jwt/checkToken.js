@@ -8,7 +8,7 @@ const prisma = new PrismaClient()
 const checkToken = (req, res, next) => {
   if (!req.headers["verification"]) {
     res.json({message:"debes logearte"})
-    return res.status(400);
+    return res.status(401);
   }
 
   const userToken = req.headers["verification"];
@@ -33,7 +33,7 @@ const checkToken = (req, res, next) => {
 const decodeToken = (req, res, next) =>{
   if(!req.headers["verification"]) {
     res.json({message:"necesitas un token"})
-    return res.status(400).json()
+    return res.status(401).json()
   }
 
   const verification = req.headers["verification"]
@@ -81,7 +81,7 @@ function verifyToken(req, res, next) {
       next();
     });
   }catch(error){
-    res.status(400).json({message:error})
+    res.status(500).json({message:error})
     console.log(error)
   }
 }

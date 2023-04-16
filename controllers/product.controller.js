@@ -10,10 +10,10 @@ const getProduct = async (req, res) =>{
             
         }
         else{
-            res.json({message:"sin productos"})
+            res.status(404).json({message:"sin productos"})
         }
     } catch(error){
-        res.json({message: error})
+        res.status(500).json({message:"error interno"})
         console.log(error)
     }
 }
@@ -30,27 +30,16 @@ const getProductByName = async (req, res) =>{
             res.status(200).json({data:productName, message:"success"})
         }
         else{
-            res.json({message:"no se ha encontrado este producto"})
+            res.status(404).json({message:"no se ha encontrado este producto"})
         }
     } catch (error) {
-        res.json({message: error})
+        res.status(500).json({message: error})
         console.log(error)
     }
 }
 
 const createProduct = async (req, res) =>{
     try{
-        /*const category = req.body.category
-        const product = req.body.product
-        //const {categoryName} = req.body
-        await prisma.category.create({
-            data: category
-        })
-
-        await prisma.product.create({
-            data: product
-        })*/
-
         const {name, price, quantity, categoryId} = req.body
         await prisma.product.create({
             data: {
@@ -66,7 +55,7 @@ const createProduct = async (req, res) =>{
         })
         res.status(200).json({message:"producto creado"})
     }catch(error){
-        res.json({message: error})
+        res.status(500).json({message: error})
         console.log(error)
 
     }
@@ -74,12 +63,22 @@ const createProduct = async (req, res) =>{
 
 const updateProduct = async (req, res) =>{
     try{
-        await Product.update(req.body, {where: {id: req.params.id}})
-        res.json({message: "producto actualizado"})
+        const {name, price, quantity} = req.body
+        const {id} = req.params
+        await prisma.product.update({
+            where:{
+                id: parseInt(id)
+            },
+            data:{
+                name, 
+                price,
+                quantity
+            }
+        })
+        res.status(200).json({message:"producto actualizado"})
     }catch(error){
-        res.json({message: error})
+        res.status(500).json({message:"error al actualizar el producto"})
         console.log(error)
-
     }
 }
 

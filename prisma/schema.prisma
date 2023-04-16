@@ -6,12 +6,13 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
   id       Int    @id @unique @default(autoincrement())
+  name     String
   email    String @unique
   username String @unique
   password String
@@ -37,5 +38,12 @@ model Product {
   quantity   Int
   categoryId Int
   category   Category @relation(fields: [categoryId], references: [id])
+  sale       Sale[]
+}
 
+model Sale {
+  id       Int       @id @default(autoincrement())
+  date     DateTime  @default(now())
+  total    Float
+  products Product[]
 }

@@ -19,10 +19,10 @@ const getCategory = async (req, res) =>{
             res.status(200).json({data:category, message:"success"})
         }
         else{
-            res.json({message:"no hay categorias"})
+            res.status(404).json({message:"no hay categorias"})
         }
     } catch(error){
-        res.status(500).json({message: error})
+        res.status(500).json({message: "error interno"})
         console.log(error)
     }
 }

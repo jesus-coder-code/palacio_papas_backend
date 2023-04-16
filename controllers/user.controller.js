@@ -36,14 +36,14 @@ const loginUser = async (req, res) =>{
                 res.json({token: generateToken(user, password)})
                 console.log("usuario logeado")
             } else{
-                res.json({message:"contraseña incorrecta"})
+                res.status(400).json({message:"contraseña incorrecta"})
             }
         } else{
-            res.json({message:"usuario y/o contraseña incorrectos"})
+            res.status(400).json({message:"usuario y/o contraseña incorrectos"})
         }
 
     } catch (error) {
-        res.json({message:"ha ocurrido un error"})
+        res.status(500).json({message:"error interno"})
         console.log(error)
     }
 }
@@ -60,10 +60,33 @@ const registerCashier = async (req, res) =>{
         if(cashier){
             res.status(200).json({message:"cajero registrado"})
         }else{
-            res.json({message:"no se pudo registar cajero"})
+            res.status(400).json({message:"no se pudo registar cajero"})
         }
     }catch(error){
-        res.status(500).json({message:"ha ocurrido un error al registrar el cajero"})
+        res.status(500).json({message:"error interno"})
+        console.log(error)
+    }
+}
+
+const updateUser = async(req, res) =>{
+    try{
+        req.body.password = bcrypt.hashSync(req.body.password, 10);
+        const {name, email, username, password} = req.body
+        const {id} = req.params
+        await prisma.user.update({
+            where:{
+                id: parseInt(id)
+            },
+            data:{
+                name,
+                email,
+                username,
+                password
+            }
+        })
+        res.status(200).json({message:"usuario actualizado"})
+    }catch(error){
+        res.status(500).json({message:"error interno"})
         console.log(error)
     }
 }
@@ -73,6 +96,7 @@ module.exports = {
     createUser,
     loginUser,
     logoutUser, 
-    registerCashier
+    registerCashier,
+    updateUser
 }
 
