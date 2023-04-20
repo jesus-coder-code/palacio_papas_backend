@@ -9,7 +9,7 @@ users.post("/register", validateUser, createUser)
 users.post("/login", loginUser)
 users.post("/logout", logoutUser)
 users.get("/login/auth", decodeToken)
-users.post("/register/cashier", verifyToken, hasRole('Admin'), validateUser, registerCashier)
+users.post("/register/cashier", verifyToken, hasRole('Admin'), validateUser, createUser)
 users.put("/updateUser/:id", checkToken, verifyToken, hasRole('Admin'), updateUser)
 
 
