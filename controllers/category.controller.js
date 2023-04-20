@@ -13,9 +13,12 @@ const createCategory = async (req, res) =>{
 
 const getCategory = async (req, res) =>{
     try{
-        const category = await prisma.category.findMany()
+        const category = await prisma.category.findMany({
+            include:{
+                products:true
+            }
+        })
         if(category){
-            //res.json(category)
             res.status(200).json({data:category, message:"success"})
         }
         else{
