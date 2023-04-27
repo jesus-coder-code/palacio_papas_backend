@@ -32,18 +32,28 @@ model Category {
 }
 
 model Product {
-  id         Int      @id @default(autoincrement())
+  id         Int           @id @default(autoincrement())
   name       String
-  price      Int
-  quantity   Int
+  price      Float
+  stock      Int
   categoryId Int
-  category   Category @relation(fields: [categoryId], references: [id])
-  sale       Sale[]
+  category   Category      @relation(fields: [categoryId], references: [id])
+  sale       ProductSale[]
 }
 
 model Sale {
-  id       Int       @id @default(autoincrement())
-  date     DateTime  @default(now())
+  id       Int           @id @default(autoincrement())
+  date     DateTime      @default(now())
   total    Float
-  products Product[]
+  products ProductSale[]
+}
+
+model ProductSale {
+  id        Int     @id @default(autoincrement())
+  saleId    Int
+  sale      Sale    @relation(fields: [saleId], references: [id])
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  subtotal  Float
 }

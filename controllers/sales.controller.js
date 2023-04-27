@@ -4,37 +4,41 @@ const { PrismaClient } = require("@prisma/client")
 const prisma = new PrismaClient()
 const createSale = async (req, res) => {
     try {
-        const { date, products } = req.body
+        const {products} = req.body
+        var total = 0
+        const productSales = products.map(product =>{
+            const {id, quantity} = product
+            const subtotal = quantity * product.price
+            total += subtotal
+            return {
+                product: {connect:{id: id}},
+                quantity: quantity,
+                subtotal: subtotal
+            }
+        }) 
+
         const sale = await prisma.sale.create({
-            data: {
-                date,
-                total: 0,
-                products: {
-                    create: products.map(product => ({
-                        name: product.name,
-                        price: product.price,
-                        quantity: product.quantity,
-                        category: { connect: { id: categoryId } }
-                    }))
+            data:{
+                total: total,
+                products:{
+                    create: productSales
                 }
             },
-            include: { products: true }
-        })
-
-        sale.total = sale.products.reduce((acc, product) => acc + product.price, 0)
-        await prisma.sale.update({
-            where: {
-                id: sale.id
-            },
-            data: {
-                total: sale.total
+            include: {
+                products: {
+                    include:{
+                        product: true
+                    }
+                }
             }
         })
+
         if(sale){
-            res.status(200).json({message:"venta creada satisfactoriamente"})
+            res.json({message:"venta creada"})
         }else{
-            res.status(400).json({message:"no se pudo realizar la venta"})
+            res.json({message:"no se pudo crear la venta"})
         }
+        
     } catch (error) {
         res.status(500).json({ message: "error interno" })
         console.log(error)
@@ -43,7 +47,8 @@ const createSale = async (req, res) => {
 
 const getSale = async (req, res) => {
     try {
-        res.status(200).json({ message: "aqui se muestran las ventas" })
+        const sale = await prisma.sale.findMany()
+        res.status(200).json({data: sale, message: "success"})
     } catch (error) {
         res.status(500).json({ message: "error interno" })
         console.log(error)

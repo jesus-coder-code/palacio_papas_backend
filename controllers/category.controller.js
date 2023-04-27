@@ -4,8 +4,20 @@ const prisma = new PrismaClient()
 
 const createCategory = async (req, res) =>{
     try{
-        await prisma.category.create({data:req.body})
-        res.json({message:"categoria creada"})
+        const {name} = req.body
+        const found = await prisma.category.findFirst({
+            where:{
+                OR:[
+                    {name: name}
+                ]
+            }
+        })
+        if(found){
+            res.status(409).json({message:"esta categoria ya existe"})
+        }else{
+            await prisma.category.create({data:req.body})
+            res.status(200).json({message:"categoria creada"})
+        }
     }catch(error){
         res.json({message:error})
     }

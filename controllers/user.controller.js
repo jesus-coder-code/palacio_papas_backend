@@ -6,9 +6,6 @@ const prisma = new PrismaClient()
 
 const createUser = async (req, res) => {
     try {
-        //req.body.password = bcrypt.hashSync(req.body.password, 10);
-        //await prisma.user.create({data:req.body});
-        //res.status(200).json({ message: "usuario registrado" });
         const {email, username} = req.body
         const found = await prisma.user.findFirst({
             where:{
