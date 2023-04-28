@@ -79,6 +79,9 @@ const getSale = async (req, res) => {
                         subtotal: true
                     }
                 }
+            },
+            orderBy:{
+                id: "desc"
             }
         })
         res.status(200).json({ data: sale, message: "success" })
