@@ -67,7 +67,16 @@ const getSale = async (req, res) => {
     try {
         const sale = await prisma.sale.findMany({
             include: {
-                products: true
+                products: {
+                    include:{
+                        product: {
+                            select:{
+                                name: true,
+                                price: true
+                            }
+                        }
+                    }
+                }
             }
         })
         res.status(200).json({ data: sale, message: "success" })
