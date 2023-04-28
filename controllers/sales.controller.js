@@ -7,10 +7,10 @@ const createSale = async (req, res) => {
         const { products } = req.body
         var total = 0
         const productSales = []
-        for(i of products) {
-            const {id, quantity} = i
+        for (i of products) {
+            const { id, quantity } = i
             const productConsult = await prisma.product.findFirst({
-                where:{
+                where: {
                     id
                 }
             })
@@ -18,7 +18,7 @@ const createSale = async (req, res) => {
             const subtotal = quantity * productConsult.price
             total += subtotal
             productSales.push({
-                product: {connect: {id: id}},
+                product: { connect: { id: id } },
                 quantity: quantity,
                 subtotal: subtotal
             })
@@ -68,13 +68,15 @@ const getSale = async (req, res) => {
         const sale = await prisma.sale.findMany({
             include: {
                 products: {
-                    include:{
+                    select: {
                         product: {
-                            select:{
+                            select: {
                                 name: true,
                                 price: true
                             }
-                        }
+                        },
+                        quantity: true,
+                        subtotal: true
                     }
                 }
             }
