@@ -52,7 +52,7 @@ const createSale = async (req, res) => {
         })
 
         if (sale) {
-            res.json({ message: "venta creada" })
+            res.status(200).json({ message: "venta creada" })
         } else {
             res.json({ message: "no se pudo crear la venta" })
         }
