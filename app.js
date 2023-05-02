@@ -5,7 +5,8 @@ const product = require("./routes/product");
 const category = require("./routes/category");
 const sale = require("./routes/sale")
 const cookieParser = require("cookie-parser")
-const session = require("express-session")
+const session = require("express-session");
+const clients = require("./routes/client");
 const port = process.env.PORT || 3000
 //require("./database/database")
 
@@ -29,6 +30,7 @@ app.use("/users", user)
 app.use("/products", product)
 app.use("/categories", category)
 app.use("/sales", sale)
+app.use("/clients", clients)
 
 app.listen(port, () =>{
     console.log("server is running on port:", port)
