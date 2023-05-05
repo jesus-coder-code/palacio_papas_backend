@@ -86,7 +86,35 @@ const createCourtesy = async (req, res) =>{
     }
 }
 
+const getCourtesy = async (req, res) =>{
+    try{
+        const courtesy = await prisma.courtesy.findMany({
+            include:{
+                products:{
+                    select:{
+                        product:{
+                            select:{
+                                name:true,
+                                price:true
+                            }
+                        },
+                        quantity: true,
+                        subtotal:true
+                    }
+                }
+            },
+            orderBy:{id: "desc"}
+        })
+        res.status(200).json({data: courtesy, message: "success"})
+    }catch(error){
+        res.status(500).json({message:"error interno"})
+        console.log(error)
+    }
+}
+
 module.exports = {
     createClient,
-    getClients
+    getClients,
+    createCourtesy,
+    getCourtesy
 }

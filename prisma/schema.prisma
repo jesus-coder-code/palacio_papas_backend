@@ -43,7 +43,7 @@ model Product {
 
 model Sale {
   id       Int           @id @default(autoincrement())
-  date     DateTime      @default(now())
+  date     DateTime      @default(now()) @db.Date
   total    Float
   products ProductSale[]
 }
@@ -59,26 +59,39 @@ model ProductSale {
 }
 
 model Client {
-  id              Int               @id @default(autoincrement())
-  name            String
-  productcourtesy ProductCourtesy[]
+  id        Int        @id @default(autoincrement())
+  name      String
+  courtesty Courtesy[]
 }
 
 model Courtesy {
   id       Int               @id @default(autoincrement())
-  date     DateTime          @default(now())
+  date     DateTime          @default(now()) @db.Date
   total    Float
   products ProductCourtesy[]
+  client   Client            @relation(fields: [clientId], references: [id])
+  clientId Int
 }
 
 model ProductCourtesy {
   id         Int      @id @default(autoincrement())
-  client     Client   @relation(fields: [clientId], references: [id])
-  clientId   Int
   courtesyId Int
   courtesy   Courtesy @relation(fields: [courtesyId], references: [id])
   productId  Int
   product    Product  @relation(fields: [productId], references: [id])
   quantity   Int
   subtotal   Float
+}
+
+model Payment {
+  id    Int      @id @default(autoincrement())
+  date  DateTime @default(now()) @db.Date
+  total Float
+}
+
+model Expense {
+  id          Int      @id @default(autoincrement())
+  description String
+  date        DateTime @default(now()) @db.Date
+  total       Float
 }

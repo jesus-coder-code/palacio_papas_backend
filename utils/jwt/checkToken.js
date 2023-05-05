@@ -88,7 +88,7 @@ function verifyToken(req, res, next) {
 function hasRole(role) {
   return (req, res, next) => {
     if (req.userRole !== role) {
-      res.status(403).json({ message: 'No eres administrador' });
+      res.status(403).json({ message: 'No tienes acceso aqui' });
     }else{
       next()
     }

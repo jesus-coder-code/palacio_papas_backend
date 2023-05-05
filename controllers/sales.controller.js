@@ -84,12 +84,15 @@ const getSale = async (req, res) => {
                 id: "desc"
             }
         })
-        res.status(200).json({ data: sale, message: "success" })
+        //res.status(200).json({ data: sale, message: "success" })
+        res.status(200).send(sale)
     } catch (error) {
         res.status(500).json({ message: "error interno" })
         console.log(error)
     }
 }
+
+
 
 module.exports = {
     createSale,
