@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 const newExpense = async (req, res) =>{
     try{
         const {description, total} = req.body
-        const expense = await prisma.create({
+        const expense = await prisma.expense.create({
             data:{
                 description,
                 total
