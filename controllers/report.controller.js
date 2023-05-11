@@ -5,35 +5,35 @@ const prisma = new PrismaClient()
 const dailyReport = async (req, res) => {
     try {
         const date = req.params.date
-        
+
         const courtesies = await prisma.courtesy.findMany({
-            where:{
+            where: {
                 date: new Date(date)
             }
         })
         //res.status(200).send(report)
 
         const expenses = await prisma.expense.findMany({
-            where:{
+            where: {
                 date: new Date(date)
             }
         })
 
         const payments = await prisma.payment.findMany({
-            where:{
+            where: {
                 date: new Date(date)
             }
         })
-        
+
         const sales = await prisma.sale.findMany({
-            where:{
+            where: {
                 date: new Date(date)
             },
-            include:{
+            include: {
                 products: {
-                    select:{
+                    select: {
                         product: {
-                            select:{
+                            select: {
                                 name: true
                             }
                         },
@@ -50,14 +50,29 @@ const dailyReport = async (req, res) => {
 
 
         const productSales = {}
-        sales.forEach(sale =>{
-            if(productSales[sale.products]){
+        sales.forEach(sale => {
+            if (productSales[sale.products]) {
                 productSales[sale.products] = 0
-            }else{
+            } else {
                 productSales[sale.products] += sale.quantity
             }
         })
-        const dailyReport = [{dailySale:dailySale, dailyExpense: dailyExpense, dailyPayment: dailyPayment}]
+        const discount = {
+            dailyExpense: dailyExpense,
+            dailyPayment: dailyPayment,
+            dailyCourtesy: dailyCourtesy
+        }
+        let totalDiscount = 0
+        for (let i in discount){
+            totalDiscount += discount[i]
+        }
+        const dailyReport = [{ dailySale: dailySale, 
+            dailyExpense: dailyExpense, 
+            dailyPayment: dailyPayment, 
+            dailyCourtesy: dailyCourtesy, 
+            totalDiscount: totalDiscount ,
+        }]
+        
         res.status(200).send(dailyReport)
     } catch (error) {
         res.status(500).json({ message: "error interno" })

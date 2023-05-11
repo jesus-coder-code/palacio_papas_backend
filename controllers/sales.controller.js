@@ -51,6 +51,20 @@ const createSale = async (req, res) => {
             }
         })
 
+        /*const idProduct = parseFloat(req.body.id)
+        const saleQuantity = parseFloat(req.body.quantity)
+
+        await prisma.product.update({
+            where:{
+                id: idProduct
+            },
+            data:{
+                stock:{
+                    decrement: saleQuantity
+                }
+            }
+        })*/
+
         if (sale) {
             res.status(200).json({ message: "venta creada" })
         } else {
