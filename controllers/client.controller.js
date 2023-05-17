@@ -57,6 +57,17 @@ const createCourtesy = async (req, res) =>{
                 quantity: quantity,
                 subtotal: subtotal
             })
+
+            const productType = "Withstock"
+            if(productConsult.type === productType){
+                if(productConsult.stock < quantity){
+                    return res.status(400).json({message:"no hay suficiente stock para el producto: " + productConsult.name})
+                }
+                await prisma.product.update({
+                    where: { id },
+                    data: { stock: productConsult.stock - quantity }
+                })
+            }
         }
         const {clientId} = req.body
         const courtesy = await prisma.courtesy.create({

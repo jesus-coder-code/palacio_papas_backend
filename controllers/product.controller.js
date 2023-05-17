@@ -40,12 +40,13 @@ const getProductByName = async (req, res) =>{
 
 const createProduct = async (req, res) =>{
     try{
-        const {name, price, stock, categoryId} = req.body
+        const {name, price, stock, type,categoryId} = req.body
         await prisma.product.create({
             data: {
                 name,
                 price,
                 stock,
+                type,
                 category: {
                     connect: {
                         id: categoryId

@@ -34,7 +34,8 @@ model Product {
   id         Int               @id @default(autoincrement())
   name       String
   price      Float
-  stock      Int
+  stock      Int?
+  type       Type
   categoryId Int
   category   Category          @relation(fields: [categoryId], references: [id])
   sale       ProductSale[]
@@ -45,7 +46,18 @@ model Sale {
   id       Int           @id @default(autoincrement())
   date     DateTime      @default(now()) @db.Date
   total    Float
+  method   Method        @default(Cash)
   products ProductSale[]
+}
+
+enum Method {
+  Cash
+  Transfer
+}
+
+enum Type {
+  Withstock
+  Nostock
 }
 
 model ProductSale {

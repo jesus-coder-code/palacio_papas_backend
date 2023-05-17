@@ -2,9 +2,9 @@ const { PrismaClient } = require("@prisma/client")
 
 
 const prisma = new PrismaClient()
-const createSale = async (req, res) => {
+const createSale = async (req, res, next) => {
     try {
-        const { products } = req.body
+        const { products, method } = req.body
         var total = 0
         const productSales = []
         for (i of products) {
@@ -22,25 +22,26 @@ const createSale = async (req, res) => {
                 quantity: quantity,
                 subtotal: subtotal
             })
-        }
-        /*const productSales = products.map(product => {
-            const { id, quantity } = product
-            console.log(productConsult)
-            const subtotal = quantity * product.price
-            total += subtotal
-            return {
-                product: { connect: { id: id } },
-                quantity: quantity,
-                subtotal: subtotal
+            const productType = "Withstock"
+            if (productConsult.type === productType) {
+                if (productConsult.stock < quantity) {
+                    return res.status(400).json({ message: "no hay suficiente stock para el producto: " + productConsult.name })
+                }
+                await prisma.product.update({
+                    where: { id },
+                    data: { stock: productConsult.stock - quantity }
+                })
             }
-        })*/
+
+        }
 
         const sale = await prisma.sale.create({
             data: {
                 total: total,
                 products: {
                     create: productSales
-                }
+                },
+                method: method
             },
             include: {
                 products: {
@@ -50,20 +51,6 @@ const createSale = async (req, res) => {
                 }
             }
         })
-
-        /*const idProduct = parseFloat(req.body.id)
-        const saleQuantity = parseFloat(req.body.quantity)
-
-        await prisma.product.update({
-            where:{
-                id: idProduct
-            },
-            data:{
-                stock:{
-                    decrement: saleQuantity
-                }
-            }
-        })*/
 
         if (sale) {
             res.status(200).json({ message: "venta creada" })
@@ -94,7 +81,7 @@ const getSale = async (req, res) => {
                     }
                 }
             },
-            orderBy:{
+            orderBy: {
                 id: "desc"
             }
         })
