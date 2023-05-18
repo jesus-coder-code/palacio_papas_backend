@@ -23,11 +23,21 @@ enum Role {
   Kitchen
 }
 
+model Cashier {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  password     String
+  role         Role     @default(Cashier)
+  category     Category @relation(fields: [categoriesId], references: [id])
+  categoriesId Int
+}
+
 model Category {
   id          Int       @id @default(autoincrement())
   name        String
   description String
   products    Product[]
+  cashier     Cashier[]
 }
 
 model Product {
