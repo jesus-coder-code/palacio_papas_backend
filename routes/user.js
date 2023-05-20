@@ -1,6 +1,6 @@
 const express = require("express");
 const users = express.Router();
-const {createUser, loginUser, logoutUser, updateUser, newCashier, loginCashier} = require("../controllers/user.controller");
+const {createUser, loginUser, logoutUser, updateUser, newCashier, loginCashier, getCashier} = require("../controllers/user.controller");
 const { decodeToken, hasRole, checkToken, verifyToken } = require("../utils/jwt/checkToken");
 const {validateUser} = require("../utils/validators/user.validator");
 const { getProduct, getProductByName, createProduct, updateProduct } = require("../controllers/product.controller");
@@ -18,7 +18,7 @@ users.put("/updateUser/:id", checkToken, verifyToken, hasRole('Admin'), updateUs
 users.get("/kitchen/getProducts",checkToken,verifyToken, hasRole('Kitchen'), getProduct)
 
 users.get("/kitchen/getProducts/:name",checkToken, verifyToken, hasRole('Kitchen'),getProductByName)
-
+users.get("/cashier/:id", checkToken, verifyToken, hasRole('Cashier'), getCashier)
 users.post("/kitchen/createProduct", checkToken, verifyToken, validateProduct, hasRole('Kitchen'),createProduct)
 
 users.put("/kitchen/updateProduct/:id",checkToken, verifyToken, hasRole('Kitchen'), updateProduct)
