@@ -41,10 +41,10 @@ model Category {
 
 model CategoryCashier {
   id         Int      @id @default(autoincrement())
-  category   Category @relation(fields: [categoryId], references: [id])
-  categoryId Int
-  cashier    Cashier  @relation(fields: [cashierId], references: [id])
-  cashierId  Int
+  category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId Int?
+  cashier    Cashier?  @relation(fields: [cashierId], references: [id])
+  cashierId  Int?
 }
 
 model Product {

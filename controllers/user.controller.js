@@ -1,7 +1,6 @@
 const { PrismaClient } = require("@prisma/client")
 const bcrypt = require("bcrypt");
 const { generateToken, } = require("../utils/jwt/generateToken");
-const categories = require("../routes/category");
 
 const prisma = new PrismaClient()
 
@@ -210,7 +209,17 @@ const getCashier = async (req, res) => {
                 username: true,
                 categories: {
                     select:{
-                        category: true
+                        category: {
+                            include:{
+                                products:{
+                                    select:{
+                                        id: true,
+                                        name: true,
+                                        price:true,
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
