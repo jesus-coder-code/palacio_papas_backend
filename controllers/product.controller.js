@@ -1,17 +1,20 @@
 const { PrismaClient } = require("@prisma/client")
 const prisma = new PrismaClient()
 const multer = require("multer")
+const FormData = require("form-data")
+
+const form = new FormData()
 
 
-const storage = multer.diskStorage({
+/*const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads'); // Carpeta de destino para guardar las imágenes
     },
     filename: function (req, file, cb) {
         cb(null, file.originalname);
     },
-});
-const upload = multer({ storage: storage });
+});*/
+const upload = multer()
 
 const getProduct = async (req, res) => {
     try {
@@ -56,22 +59,40 @@ const getProductByName = async (req, res) => {
 const createProduct = async (req, res) => {
     try {
         const { name, price, stock, type, categoryId } = req.body
-        upload.single('imagen')
+        upload.none()
         const image = req.file
-        await prisma.product.create({
-            data: {
-                name,
-                price,
-                stock,
-                type,
-                image,
-                category: {
-                    connect: {
-                        id: categoryId
+        if(type === 'Nostock'){
+            await prisma.product.create({
+                data:{
+                    name,
+                    price,
+                    type,
+                    image,
+                    category:{
+                        connect:{
+                            id: categoryId
+                        }
                     }
                 }
-            }
-        })
+            })
+        }else{
+            await prisma.product.create({
+                data:{
+                    name,
+                    price,
+                    stock,
+                    type,
+                    image,
+                    category:{
+                        connect:{
+                            id: categoryId
+                        }
+                    }
+                    
+
+                }
+            })
+        }
         res.status(200).json({ message: "producto creado" })
     } catch (error) {
         res.status(500).json({ message: error })

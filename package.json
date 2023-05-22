@@ -20,6 +20,7 @@
     "express-myconnection": "^1.0.4",
     "express-session": "^1.17.3",
     "express-validator": "^6.15.0",
+    "form-data": "^4.0.0",
     "http-errors": "^2.0.0",
     "jsonwebtoken": "^9.0.0",
     "jwt-simple": "^0.5.6",
