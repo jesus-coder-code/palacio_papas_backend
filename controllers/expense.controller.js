@@ -26,7 +26,7 @@ const getExpense = async (req, res) =>{
     try{
         const expense = await prisma.expense.findMany()
         if(expense){
-            res.status(200).send(expense)
+            res.status(200).json({message:"success", data: expense, status:"ok"})
         }
     }catch(error){
         res.status(500).json({message:"error interno"})

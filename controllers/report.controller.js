@@ -116,7 +116,7 @@ const dailyReport = async (req, res) => {
             totalDiscount: totalDiscount,
         }]
 
-        res.status(200).send(dailyReport)
+        res.status(200).json({message:"success", data: dailyReport, status:"ok"})
     } catch (error) {
         res.status(500).json({ message: "error interno" })
         console.log(error)

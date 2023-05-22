@@ -201,7 +201,7 @@ const loginCashier = async (req, res) => {
 const getAllCashier = async (req, res) =>{
     try{
         const all = await prisma.cashier.findMany()
-        res.status(200).send(all)
+        res.status(200).json({message:"success", data: all, status:"ok"})
     }catch(error){
         res.status(500).json({message:"error interno"})
         console.log(error)
@@ -215,7 +215,7 @@ const getKitchen = async (req, res) =>{
                 role: 'Kitchen'
             }
         })
-        res.status(200).send(all)
+        res.status(200).json({message:"success", data: all, status:"ok"})
     }catch(error){
         res.status(500).json({message:"error interno"})
         console.log(error)
@@ -252,7 +252,7 @@ const getCashier = async (req, res) => {
             }
         })
         const datas = [datos]
-        res.status(200).send(datas)
+        res.status(200).json({message:"success", data: datas, status:"ok"})
     } catch (error) {
         res.status(500).json({ message: "error interno" })
         console.log(error)
