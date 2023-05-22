@@ -15,7 +15,11 @@ const upload = multer({ storage: storage });
 
 const getProduct = async (req, res) => {
     try {
-        const product = await prisma.product.findMany()
+        const product = await prisma.product.findMany({
+            orderBy:{
+                id: "desc"
+            }
+        })
         if (product) {
             res.status(200).json({ data: product, message: "success" })
 
@@ -78,7 +82,7 @@ const createProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
     try {
-        const { name, price, stock } = req.body
+        const { name, price, stock, type, categoryId } = req.body
         const { id } = req.params
         await prisma.product.update({
             where: {
@@ -87,7 +91,13 @@ const updateProduct = async (req, res) => {
             data: {
                 name,
                 price,
-                stock
+                stock,
+                type,
+                category:{
+                    connect:{
+                        id:categoryId
+                    }
+                }
             }
         })
         res.status(200).json({ message: "producto actualizado" })
