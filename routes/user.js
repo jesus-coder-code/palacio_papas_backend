@@ -17,7 +17,7 @@ users.put("/updateUser/:id", checkToken, verifyToken, hasRole('Admin'), updateUs
 
 users.get("/kitchen/getProducts", checkToken, verifyToken, hasRole('Kitchen'), getProduct)
 
-users.get("/cashier/getAllCashier", checkToken, verifyToken, hasRole('Kitchen'), getAllCashier)
+users.get("/cashier/getAllCashier", checkToken, verifyToken, hasRole('Admin'), getAllCashier)
 
 users.get("/kitchen/getProducts/:name", checkToken, verifyToken, hasRole('Kitchen'), getProductByName)
 users.get("/cashier/:id", checkToken, verifyToken, hasRole('Cashier'), getCashier)
