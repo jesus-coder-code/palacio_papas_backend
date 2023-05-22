@@ -32,8 +32,8 @@ const checkToken = (req, res, next) => {
 
 const decodeToken = (req, res, next) =>{
   if(!req.headers["verification"]) {
-    res.json({message:"necesitas un token"})
-    return res.status(401).json()
+    //res.json({message:"necesitas un token"})
+    return res.status(401).json({message:"necesitas un token"})
   }
 
   const verification = req.headers["verification"]
