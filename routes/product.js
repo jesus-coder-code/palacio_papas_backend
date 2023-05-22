@@ -7,7 +7,8 @@ const {
     getProduct,
     getProductByName,
     createProduct,
-    updateProduct
+    updateProduct,
+    
 } = require("../controllers/product.controller")
 //const { blacklistToken } = require("../controllers/user.controller")
 

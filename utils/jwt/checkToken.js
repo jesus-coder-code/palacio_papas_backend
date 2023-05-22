@@ -81,7 +81,7 @@ function verifyToken(req, res, next) {
       next();
     });
   }catch(error){
-    res.status(500).json({message:error})
+    res.status(500).json({message:"error interno"})
     console.log(error)
   }
 }
@@ -95,11 +95,44 @@ function hasRole(role) {
   }
 }
 
+/*function verifyId(req, res, next) {
+  // Obtener el token de la cabecera de la solicitud
+  const token = req.headers['verification'];
+  try{
+    if (!token) {
+      return res.status(401).send({ message: 'No se proporcionó un token de autenticación.' });
+    }
+  
+    // Verificar el token
+    jwt.verify(token, "secretKey", (err, decoded) => {
+      if (err) {
+        return res.status(401).send({ message: 'El token de autenticación es inválido.' });
+      }
+      // Agregar el id del usuario al objeto de solicitud
+      req.userId = decoded.id;
+    });
+  }catch(error){
+    res.status(500).json({message:error})
+    console.log(error)
+  }
+}*/
+
+/*function hasId(id){
+  return (req, res, next) => {
+    if(req.userId == id){
+      res.status(403).json({ message: 'eres cajero pero no tienes acceso aqui' });
+    }else{
+      next()
+    }
+  }
+}*/
+
 
 
 module.exports = {
   checkToken: checkToken,
   decodeToken: decodeToken,
   hasRole: hasRole,
-  verifyToken: verifyToken
+  //hasId: hasId,
+  verifyToken: verifyToken,
 };

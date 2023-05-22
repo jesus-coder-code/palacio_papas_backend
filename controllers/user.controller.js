@@ -210,7 +210,9 @@ const getCashier = async (req, res) => {
                 categories: {
                     select:{
                         category: {
-                            include:{
+                            select:{
+                                id: true,
+                                name: true,
                                 products:{
                                     select:{
                                         id: true,

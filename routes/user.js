@@ -1,11 +1,10 @@
 const express = require("express");
 const users = express.Router();
 const {createUser, loginUser, logoutUser, updateUser, newCashier, loginCashier, getCashier} = require("../controllers/user.controller");
-const { decodeToken, hasRole, checkToken, verifyToken } = require("../utils/jwt/checkToken");
+const { decodeToken, hasRole, checkToken, verifyToken, hasId} = require("../utils/jwt/checkToken");
 const {validateUser} = require("../utils/validators/user.validator");
 const { getProduct, getProductByName, createProduct, updateProduct } = require("../controllers/product.controller");
 const { validateProduct } = require("../utils/validators/product.validator");
-
 
 users.post("/register", validateUser, createUser)
 users.post("/login", loginUser)
