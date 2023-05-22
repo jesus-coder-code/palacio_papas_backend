@@ -208,6 +208,21 @@ const getAllCashier = async (req, res) =>{
     }
 }
 
+const getKitchen = async (req, res) =>{
+    try{
+        const all = await prisma.user.findMany({
+            where:{
+                role: 'Kitchen'
+            }
+        })
+        res.status(200).send(all)
+    }catch(error){
+        res.status(500).json({message:"error interno"})
+        console.log(error)
+    }
+}
+
+
 const getCashier = async (req, res) => {
     try {
         const { id } = req.params
@@ -252,6 +267,7 @@ module.exports = {
     newCashier,
     loginCashier,
     getCashier,
-    getAllCashier
+    getAllCashier,
+    getKitchen
 }
 
