@@ -3,7 +3,6 @@ const prisma = new PrismaClient()
 const multer = require("multer")
 const FormData = require("form-data")
 
-const form = new FormData()
 
 
 /*const storage = multer.diskStorage({
@@ -14,12 +13,12 @@ const form = new FormData()
         cb(null, file.originalname);
     },
 });*/
-const upload = multer()
+
 
 const getProduct = async (req, res) => {
     try {
         const product = await prisma.product.findMany({
-            orderBy:{
+            orderBy: {
                 id: "desc"
             }
         })
@@ -56,44 +55,46 @@ const getProductByName = async (req, res) => {
     }
 }
 
+
 const createProduct = async (req, res) => {
     try {
         const { name, price, stock, type, categoryId } = req.body
-        upload.none()
-        const image = req.file
-        if(type === 'Nostock'){
-            await prisma.product.create({
-                data:{
-                    name,
-                    price,
-                    type,
-                    image,
-                    category:{
-                        connect:{
-                            id: categoryId
-                        }
+        const filename = req.file
+        const jsonString = JSON.stringify(filename)
+        const bytes = new TextEncoder().encode(jsonString)
+        //const image = req.file
+        /*console.log(req.file);
+        const response = await fetch("http://localhost:3000/products/createProduct", {
+            method:"POST",
+            body:form
+        })
+        const product = await prisma.product.create({
+            data:{
+                name: response.name,
+                price: response.price,
+                stock: response.data.name,
+                type: response.data.name,
+                category: response.data.name,
+                image: response.image
+            }
+        })*/
+        const product = await prisma.product.create({
+            data:{
+                name,
+                price: parseFloat(price),
+                stock: parseInt(stock),
+                type,
+                category:{
+                    connect:{
+                        id:parseInt(categoryId)
                     }
-                }
-            })
-        }else{
-            await prisma.product.create({
-                data:{
-                    name,
-                    price,
-                    stock,
-                    type,
-                    image,
-                    category:{
-                        connect:{
-                            id: categoryId
-                        }
-                    }
-                    
-
-                }
-            })
+                },
+                image:bytes
+            }
+        })
+        if(product){
+            res.status(200).json({message:"producto creado"})
         }
-        res.status(200).json({ message: "producto creado" })
     } catch (error) {
         res.status(500).json({ message: error })
         console.log(error)
@@ -114,9 +115,9 @@ const updateProduct = async (req, res) => {
                 price,
                 stock,
                 type,
-                category:{
-                    connect:{
-                        id:categoryId
+                category: {
+                    connect: {
+                        id: categoryId
                     }
                 }
             }

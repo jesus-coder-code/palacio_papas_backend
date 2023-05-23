@@ -1,5 +1,8 @@
 const express = require("express")
 const products = express.Router()
+const multer = require("multer")
+const upload = multer()
+
 const {validateProduct} = require("../utils/validators/product.validator")
 //const {requireRole} = require("../utils/auth/auth")
 const {checkToken, hasRole, verifyToken} = require("../utils/jwt/checkToken")
@@ -16,7 +19,7 @@ products.get("/getProducts",checkToken,verifyToken, hasRole('Admin'), getProduct
 
 products.get("/getProducts/:name",checkToken, verifyToken, hasRole('Admin'),getProductByName)
 
-products.post("/createProduct", checkToken, verifyToken, validateProduct, hasRole('Admin'),createProduct)
+products.post("/createProduct", checkToken, verifyToken, hasRole('Admin'),upload.single('image'),createProduct)
 
 products.put("/updateProduct/:id",checkToken, verifyToken, hasRole('Admin'), updateProduct)
 
