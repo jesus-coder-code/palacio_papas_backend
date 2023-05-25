@@ -25,7 +25,7 @@ users.post("/kitchen/createProduct", checkToken, verifyToken, validateProduct, h
 
 users.put("/kitchen/updateProduct/:id", checkToken, verifyToken, hasRole('Kitchen'), updateProduct)
 users.post("/register/newCashier", checkToken, verifyToken, hasRole('Admin'), validateUser, newCashier)
-users.post("/cashier/updateCashier", checkToken, verifyToken, hasRole('Admin'), validateUser, updateCashier)
+users.post("/cashier/updateCashier/:id", checkToken, verifyToken, hasRole('Admin'), validateUser, updateCashier)
 
 
 

@@ -195,6 +195,9 @@ const updateCashier = async (req, res) => {
             }
 
             const cashier = await prisma.cashier.update({
+                where:{
+                    id:parseInt(id)
+                },
                 data: {
                     username: username,
                     password: password,
