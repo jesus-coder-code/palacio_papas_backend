@@ -108,6 +108,7 @@ const createProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
     try {
         const { name, price, stock, type, categoryId } = req.body
+        const filename = req.files
         const { id } = req.params
         await prisma.product.update({
             where: {
@@ -122,7 +123,8 @@ const updateProduct = async (req, res) => {
                     connect: {
                         id: categoryId
                     }
-                }
+                },
+                image:filename[0]
             }
         })
         res.status(200).json({ message: "producto actualizado" })
