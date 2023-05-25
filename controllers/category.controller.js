@@ -27,7 +27,16 @@ const getCategory = async (req, res) =>{
     try{
         const category = await prisma.category.findMany({
             include:{
-                products:true
+                products:{
+                    select:{
+                        name: true,
+                        price:true,
+                        stock:true,
+                        type: true,
+                        categoryId: true,
+                        image:true
+                    }
+                }
             }
         })
         if(category){
