@@ -29,7 +29,8 @@ const dailyReport = async (req, res) => {
             where: {
                 date: new Date(date)
             },
-            include: {
+            select: {
+                id: true,
                 products: {
                     select: {
                         product: {
@@ -61,7 +62,7 @@ const dailyReport = async (req, res) => {
             }
         })
 
-
+        console.log(sales)
         const dailySale = sales.reduce((total, sale) => total + sale.total, 0)
         const onCash = cashes.reduce((total, sale) => total + sale.total, 0)
         const onTransfer = transfers.reduce((total, sale) => total + sale.total, 0)
@@ -89,7 +90,8 @@ const dailyReport = async (req, res) => {
             totalDiscount: totalDiscount,
         }]
 
-        res.status(200).send([{message:"success", data: dailyReport, status:"ok"}])
+        res.status(200).send([{message:"success", data: sales, status:"ok"}])
+        console.log(sales)
     } catch (error) {
         res.status(500).json({ message: "error interno" })
         console.log(error)

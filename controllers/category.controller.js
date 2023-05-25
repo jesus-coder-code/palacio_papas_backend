@@ -29,12 +29,13 @@ const getCategory = async (req, res) =>{
             include:{
                 products:{
                     select:{
+                        id:true,
                         name: true,
                         price:true,
                         stock:true,
                         type: true,
                         categoryId: true,
-                        image:true
+                        image: true
                     }
                 }
             }
