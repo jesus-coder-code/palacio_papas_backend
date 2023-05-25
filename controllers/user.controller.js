@@ -168,6 +168,61 @@ const newCashier = async (req, res) => {
     }
 }
 
+const updateCashier = async (req, res) => {
+    try {
+        const { username} = req.body
+        const found = await prisma.cashier.findFirst({
+            where: {
+                OR: [{ username: username }]
+            }
+        })
+        if (found) {
+            res.status(409).json({ message: "este usuario ya existe" })
+        } else {
+            const password = bcrypt.hashSync(req.body.password, 10)
+            const cashierCategories = []
+            const {categories} = req.body
+            for (i of categories) {
+                const { id } = i
+                const categoryConsult = await prisma.category.findFirst({
+                    where: {
+                        id
+                    }
+                })
+                cashierCategories.push({
+                    category: { connect: { id: categoryConsult.id } }
+                })
+            }
+
+            const cashier = await prisma.cashier.update({
+                data: {
+                    username: username,
+                    password: password,
+                    categories: {
+                        create: cashierCategories
+                    },
+                    role: role
+                },
+                include: {
+                    categories: {
+                        include: {
+                            category: true
+                        }
+                    }
+                }
+            })
+            if (cashier) {
+                res.status(200).json({ message: "cajero actualizado" })
+            } else {
+                res.status(400).json({ message: "no se pudo actualizar el cajero" })
+            }
+        }
+    } catch (error) {
+        res.status(500).json({ message: "error interno" })
+        console.log(error)
+    }
+}
+
 const loginCashier = async (req, res) => {
     try {
         const { username } = req.body
@@ -270,6 +325,7 @@ module.exports = {
     loginCashier,
     getCashier,
     getAllCashier,
-    getKitchen
+    getKitchen,
+    updateCashier
 }
 
