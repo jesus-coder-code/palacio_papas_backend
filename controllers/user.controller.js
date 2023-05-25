@@ -286,6 +286,7 @@ const getCashier = async (req, res, next) => {
                 id: userId
             },
             select: {
+                id:true,
                 username: true,
                 categories: {
                     select: {
