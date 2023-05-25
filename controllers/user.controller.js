@@ -260,7 +260,20 @@ const loginCashier = async (req, res) => {
 
 const getAllCashier = async (req, res) =>{
     try{
-        const all = await prisma.cashier.findMany()
+        const all = await prisma.cashier.findMany({
+            include:{
+                categories:{
+                    select:{
+                        category:{
+                            select:{
+                                id: true,
+                                name: true
+                            }
+                        }
+                    }
+                }
+            }
+        })
         res.status(200).json({message:"success", data: all, status:"ok"})
     }catch(error){
         res.status(500).json({message:"error interno"})
