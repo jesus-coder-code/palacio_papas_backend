@@ -20,7 +20,7 @@ users.get("/kitchen/getProducts", checkToken, verifyToken, hasRole('Kitchen'), g
 users.get("/cashier/getAllCashier", checkToken, verifyToken, hasRole('Admin'), getAllCashier)
 
 users.get("/kitchen/getProducts/:name", checkToken, verifyToken, hasRole('Kitchen'), getProductByName)
-users.get("/cashier/:id", checkToken, verifyToken, hasRole('Cashier'), getCashier)
+users.get("/cashier", checkToken, verifyToken, hasRole('Cashier'), getCashier)
 users.post("/kitchen/createProduct", checkToken, verifyToken, validateProduct, hasRole('Kitchen'), createProduct)
 
 users.put("/kitchen/updateProduct/:id", checkToken, verifyToken, hasRole('Kitchen'), updateProduct)

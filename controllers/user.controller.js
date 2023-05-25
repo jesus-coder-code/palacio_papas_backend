@@ -1,6 +1,7 @@
 const { PrismaClient } = require("@prisma/client")
 const bcrypt = require("bcrypt");
 const { generateToken, } = require("../utils/jwt/generateToken");
+const jwt = require("jsonwebtoken");
 
 const prisma = new PrismaClient()
 
@@ -201,14 +202,15 @@ const updateCashier = async (req, res) => {
                 },
                 role: role
             },
-            include: {
+            /*include: {
                 categories: {
                     include: {
                         category: true,
                     }
                 }
-            }
+            }*/
         })
+
         if (cashier) {
             res.status(200).json({ message: "cajero actualizado" })
         } else {
@@ -267,12 +269,21 @@ const getKitchen = async (req, res) => {
 }
 
 
-const getCashier = async (req, res) => {
+const getCashier = async (req, res, next) => {
+    const token = req.headers['verification']
+    let auth = {}
     try {
-        const { id } = req.params
-        const datos = await prisma.cashier.findUnique({
+        
+        if(!token){
+            return res.status.json({message:"no se proporcionó un token"})
+        }
+        auth = jwt.decode(token, "secretKey")
+        req.userId = auth.userId
+        const userId = req.userId
+        console.log(userId)
+        const datos = await prisma.user.findUnique({
             where: {
-                id: parseInt(id)
+                id: userId
             },
             select: {
                 username: true,
