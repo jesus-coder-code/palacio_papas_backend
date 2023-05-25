@@ -18,12 +18,13 @@ const createUser = async (req, res) => {
             res.status(409).json({ message: "este usuario ya existe, elija otro" })
         } else {
             const password = bcrypt.hashSync(req.body.password, 10);
+
             await prisma.user.create({
                 data: {
                     username,
                     password,
                     role
-                }
+                },
             })
             res.status(200).json({ message: "usuario registrado" })
         }
@@ -115,8 +116,8 @@ const updateUser = async (req, res) => {
 
 const newCashier = async (req, res) => {
     try {
-        const { username, role} = req.body
-        const found = await prisma.cashier.findFirst({
+        const { username, role } = req.body
+        const found = await prisma.user.findFirst({
             where: {
                 OR: [{ username: username }]
             }
@@ -126,7 +127,7 @@ const newCashier = async (req, res) => {
         } else {
             const password = bcrypt.hashSync(req.body.password, 10)
             const cashierCategories = []
-            const {categories} = req.body
+            const { categories } = req.body
             for (i of categories) {
                 const { id } = i
                 const categoryConsult = await prisma.category.findFirst({
@@ -139,7 +140,7 @@ const newCashier = async (req, res) => {
                 })
             }
 
-            const cashier = await prisma.cashier.create({
+            const cashier = await prisma.user.create({
                 data: {
                     username: username,
                     password: password,
@@ -170,87 +171,49 @@ const newCashier = async (req, res) => {
 
 const updateCashier = async (req, res) => {
     try {
-        const { username} = req.body
-        const found = await prisma.cashier.findFirst({
-            where: {
-                OR: [{ username: username }]
-            }
-        })
-        if (found) {
-            res.status(409).json({ message: "este usuario ya existe" })
-        } else {
-            const password = bcrypt.hashSync(req.body.password, 10)
-            const cashierCategories = []
-            const {categories} = req.body
-            for (i of categories) {
-                const { id } = i
-                const categoryConsult = await prisma.category.findFirst({
-                    where: {
-                        id
-                    }
-                })
-                cashierCategories.push({
-                    category: { connect: { id: categoryConsult.id } }
-                })
-            }
+        const { username, role } = req.body
+        const { id } = req.params
 
-            const cashier = await prisma.cashier.update({
-                where:{
-                    id:parseInt(id)
-                },
-                data: {
-                    username: username,
-                    password: password,
-                    categories: {
-                        create: cashierCategories
-                    },
-                    role: role
-                },
-                include: {
-                    categories: {
-                        include: {
-                            category: true
-                        }
-                    }
+        const password = bcrypt.hashSync(req.body.password, 10)
+        const cashierCategories = []
+        const { categories } = req.body
+        for (i of categories) {
+            const { id } = i
+            const categoryConsult = await prisma.category.findFirst({
+                where: {
+                    id
                 }
             })
-            if (cashier) {
-                res.status(200).json({ message: "cajero actualizado" })
-            } else {
-                res.status(400).json({ message: "no se pudo actualizar el cajero" })
-            }
+            cashierCategories.push({
+                category: { connect: { id: categoryConsult.id } }
+            })
         }
-    } catch (error) {
-        res.status(500).json({ message: "error interno" })
-        console.log(error)
-    }
-}
 
-const loginCashier = async (req, res) => {
-    try {
-        const { username } = req.body
-        const user = await prisma.cashier.findUnique({
-            where: { username }
+        const cashier = await prisma.user.update({
+            where: {
+                id: parseInt(id)
+            },
+            data: {
+                username: username,
+                password: password,
+                categories: {
+                    update: cashierCategories
+                },
+                role: role
+            },
+            include: {
+                categories: {
+                    include: {
+                        category: true,
+                    }
+                }
+            }
         })
-
-        if (user) {
-            const password = bcrypt.compareSync(req.body.password, user.password)
-
-            if (password) {
-                res.cookie('cookie', generateToken, {
-                    maxAge: null,
-                    httpOnly: true,
-                    secure: true
-                })
-                res.json({ token: generateToken(user, password) })
-                console.log("cajero logeado")
-            } else {
-                res.status(400).json({ message: "contraseña incorrecta" })
-            }
+        if (cashier) {
+            res.status(200).json({ message: "cajero actualizado" })
         } else {
-            res.status(400).json({ message: "usuario y/o contraseña incorrectos" })
+            res.status(400).json({ message: "no se pudo actualizar el cajero" })
         }
-
 
     } catch (error) {
         res.status(500).json({ message: "error interno" })
@@ -258,39 +221,47 @@ const loginCashier = async (req, res) => {
     }
 }
 
-const getAllCashier = async (req, res) =>{
-    try{
-        const all = await prisma.cashier.findMany({
-            include:{
-                categories:{
-                    select:{
-                        category:{
-                            select:{
+
+
+const getAllCashier = async (req, res) => {
+    try {
+        const all = await prisma.user.findMany({
+            include: {
+                categories: {
+                    select: {
+                        category: {
+                            select: {
                                 id: true,
-                                name: true
+                                name: true,
+                                products: {
+                                    select: {
+                                        name: true,
+                                        price: true
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
         })
-        res.status(200).json({message:"success", data: all, status:"ok"})
-    }catch(error){
-        res.status(500).json({message:"error interno"})
+        res.status(200).json({ message: "success", data: all, status: "ok" })
+    } catch (error) {
+        res.status(500).json({ message: "error interno" })
         console.log(error)
     }
 }
 
-const getKitchen = async (req, res) =>{
-    try{
+const getKitchen = async (req, res) => {
+    try {
         const all = await prisma.user.findMany({
-            where:{
+            where: {
                 role: 'Kitchen'
             }
         })
-        res.status(200).json({message:"success", data: all, status:"ok"})
-    }catch(error){
-        res.status(500).json({message:"error interno"})
+        res.status(200).json({ message: "success", data: all, status: "ok" })
+    } catch (error) {
+        res.status(500).json({ message: "error interno" })
         console.log(error)
     }
 }
@@ -306,16 +277,16 @@ const getCashier = async (req, res) => {
             select: {
                 username: true,
                 categories: {
-                    select:{
+                    select: {
                         category: {
-                            select:{
+                            select: {
                                 id: true,
                                 name: true,
-                                products:{
-                                    select:{
+                                products: {
+                                    select: {
                                         id: true,
                                         name: true,
-                                        price:true,
+                                        price: true,
                                     }
                                 }
                             }
@@ -325,7 +296,7 @@ const getCashier = async (req, res) => {
             }
         })
         const datas = [datos]
-        res.status(200).json({message:"success", data: datas, status:"ok"})
+        res.status(200).json({ message: "success", data: datas, status: "ok" })
     } catch (error) {
         res.status(500).json({ message: "error interno" })
         console.log(error)
@@ -338,7 +309,6 @@ module.exports = {
     logoutUser,
     updateUser,
     newCashier,
-    loginCashier,
     getCashier,
     getAllCashier,
     getKitchen,
