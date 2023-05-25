@@ -21,7 +21,7 @@ products.get("/getProducts/:name",checkToken, verifyToken, hasRole('Admin'),getP
 
 products.post("/createProduct", checkToken, verifyToken, hasRole('Admin'),upload.any('image', 1),createProduct)
 
-products.put("/updateProduct/:id",checkToken, verifyToken, hasRole('Admin'), updateProduct)
+products.put("/updateProduct/:id",checkToken, verifyToken, hasRole('Admin'), upload.any('image', 1),updateProduct)
 
 
 module.exports = products

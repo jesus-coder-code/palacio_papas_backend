@@ -60,25 +60,7 @@ const createProduct = async (req, res) => {
     try {
         const { name, price, stock, type, categoryId } = req.body
         const filename = req.files
-        //const jsonString = JSON.stringify(filename)
-        //const bytes = new TextEncoder().encode(jsonString)
         
-        //const image = req.file
-        /*console.log(req.file);
-        const response = await fetch("http://localhost:3000/products/createProduct", {
-            method:"POST",
-            body:form
-        })
-        const product = await prisma.product.create({
-            data:{
-                name: response.name,
-                price: response.price,
-                stock: response.data.name,
-                type: response.data.name,
-                category: response.data.name,
-                image: response.image
-            }
-        })*/
         const product = await prisma.product.create({
             data:{
                 name,
@@ -116,12 +98,12 @@ const updateProduct = async (req, res) => {
             },
             data: {
                 name,
-                price,
-                stock,
+                price:parseFloat(price),
+                stock:parseInt(stock),
                 type,
                 category: {
                     connect: {
-                        id: categoryId
+                        id: parseInt(categoryId)
                     }
                 },
                 image:filename[0]
