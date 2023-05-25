@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 
 const createUser = async (req, res) => {
     try {
-        const { username } = req.body
+        const { username, role } = req.body
         const found = await prisma.user.findFirst({
             where: {
                 OR: [
@@ -22,6 +22,7 @@ const createUser = async (req, res) => {
                 data: {
                     username,
                     password,
+                    role
                 }
             })
             res.status(200).json({ message: "usuario registrado" })
@@ -114,7 +115,7 @@ const updateUser = async (req, res) => {
 
 const newCashier = async (req, res) => {
     try {
-        const { username} = req.body
+        const { username, role} = req.body
         const found = await prisma.cashier.findFirst({
             where: {
                 OR: [{ username: username }]
@@ -144,7 +145,8 @@ const newCashier = async (req, res) => {
                     password: password,
                     categories: {
                         create: cashierCategories
-                    }
+                    },
+                    role: role
                 },
                 include: {
                     categories: {
