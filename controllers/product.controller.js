@@ -59,7 +59,7 @@ const getProductByName = async (req, res) => {
 const createProduct = async (req, res) => {
     try {
         const { name, price, stock, type, categoryId } = req.body
-        const filename = req.file
+        const filename = req.files
         const jsonString = JSON.stringify(filename)
         const bytes = new TextEncoder().encode(jsonString)
         //const image = req.file
@@ -94,6 +94,7 @@ const createProduct = async (req, res) => {
         })
         if(product){
             res.status(200).json({message:"producto creado"})
+            console.log(bytes)
         }
     } catch (error) {
         res.status(500).json({ message: error })

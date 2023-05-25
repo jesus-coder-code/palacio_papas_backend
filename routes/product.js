@@ -19,7 +19,7 @@ products.get("/getProducts",checkToken,verifyToken, hasRole('Admin'), getProduct
 
 products.get("/getProducts/:name",checkToken, verifyToken, hasRole('Admin'),getProductByName)
 
-products.post("/createProduct", checkToken, verifyToken, hasRole('Admin'),upload.single('image'),createProduct)
+products.post("/createProduct", checkToken, verifyToken, hasRole('Admin'),upload.any('image', 1),createProduct)
 
 products.put("/updateProduct/:id",checkToken, verifyToken, hasRole('Admin'), updateProduct)
 

@@ -61,34 +61,7 @@ const dailyReport = async (req, res) => {
             }
         })
 
-        /*const productSales = await prisma.sale.findMany({
-            where:{
-                date: new Date(date)
-            },
-            select:{
-                products:{
-                    select:{
-                        product:{
-                            select:{
-                                name:true
-                            }
-                        },
-                        quantity:true
-                    }
-                }
-            },
-        })
-        const quantitySale = {}
-        for (i of productSales){
-            const {product, quantity} = i
-            if(quantitySale[product]){
-                quantitySale[product] += quantity
-            }else{
-                quantitySale[product] = quantity
-            }
-        }*/
-        //console.log(quantitySale)
-        //console.log(sales)
+
         const dailySale = sales.reduce((total, sale) => total + sale.total, 0)
         const onCash = cashes.reduce((total, sale) => total + sale.total, 0)
         const onTransfer = transfers.reduce((total, sale) => total + sale.total, 0)
@@ -116,7 +89,7 @@ const dailyReport = async (req, res) => {
             totalDiscount: totalDiscount,
         }]
 
-        res.status(200).json({message:"success", data: dailyReport, status:"ok"})
+        res.status(200).send([{message:"success", data: dailyReport, status:"ok"}])
     } catch (error) {
         res.status(500).json({ message: "error interno" })
         console.log(error)
