@@ -60,8 +60,9 @@ const createProduct = async (req, res) => {
     try {
         const { name, price, stock, type, categoryId } = req.body
         const filename = req.files
-        const jsonString = JSON.stringify(filename)
-        const bytes = new TextEncoder().encode(jsonString)
+        //const jsonString = JSON.stringify(filename)
+        //const bytes = new TextEncoder().encode(jsonString)
+        
         //const image = req.file
         /*console.log(req.file);
         const response = await fetch("http://localhost:3000/products/createProduct", {
@@ -89,12 +90,13 @@ const createProduct = async (req, res) => {
                         id:parseInt(categoryId)
                     }
                 },
-                image:bytes
+                image:filename[0]
             }
         })
         if(product){
             res.status(200).json({message:"producto creado"})
-            console.log(bytes)
+            const indice = filename[0]
+            console.log(indice)
         }
     } catch (error) {
         res.status(500).json({ message: error })
