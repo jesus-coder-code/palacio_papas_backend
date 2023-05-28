@@ -1,6 +1,6 @@
 const express = require("express");
 const users = express.Router();
-const { createUser, loginUser, logoutUser, updateUser, newCashier, getCashier, getAllCashier, getKitchen, updateCashier } = require("../controllers/user.controller");
+const { createUser, loginUser, logoutUser, updateUser, newCashier, getCashier, getAllCashier, getKitchen, updateCashier, getHistoryCashier } = require("../controllers/user.controller");
 const { decodeToken, hasRole, checkToken, verifyToken, hasId } = require("../utils/jwt/checkToken");
 const { validateUser } = require("../utils/validators/user.validator");
 const { getProduct, getProductByName, createProduct, updateProduct } = require("../controllers/product.controller");
@@ -26,6 +26,7 @@ users.post("/kitchen/createProduct", checkToken, verifyToken, validateProduct, h
 users.put("/kitchen/updateProduct/:id", checkToken, verifyToken, hasRole('Kitchen'), updateProduct)
 users.post("/register/newCashier", checkToken, verifyToken, hasRole('Admin'), validateUser, newCashier)
 users.put("/cashier/updateCashier/:id", checkToken, verifyToken, hasRole('Admin'), validateUser, updateCashier)
+users.get("/cashier/getHistoryCashier/:date", checkToken, verifyToken,hasRole('Cashier'), getHistoryCashier)
 
 
 

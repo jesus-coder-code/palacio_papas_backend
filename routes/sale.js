@@ -4,6 +4,6 @@ const {checkToken, verifyToken, hasRole} = require("../utils/jwt/checkToken")
 const {createSale, getSale, earnReport} = require("../controllers/sales.controller")
 
 sales.get("/getSales", checkToken, getSale)
-sales.post("/createSale", checkToken, createSale)
+sales.post("/createSale", checkToken, verifyToken, createSale)
 
 module.exports = sales

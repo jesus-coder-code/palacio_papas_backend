@@ -273,9 +273,9 @@ const getCashier = async (req, res, next) => {
     const token = req.headers['verification']
     let auth = {}
     try {
-        
-        if(!token){
-            return res.status.json({message:"no se proporcionó un token"})
+
+        if (!token) {
+            return res.status(401).json({ message: "no se proporcionó un token" })
         }
         auth = jwt.decode(token, "secretKey")
         req.userId = auth.userId
@@ -286,7 +286,7 @@ const getCashier = async (req, res, next) => {
                 id: userId
             },
             select: {
-                id:true,
+                id: true,
                 username: true,
                 categories: {
                     select: {
@@ -315,6 +315,92 @@ const getCashier = async (req, res, next) => {
     }
 }
 
+const getHistoryCashier = async (req, res) => {
+    const token = req.headers['verification']
+    const date = req.params.date
+    const newdate = new Date(date)
+    let auth = {}
+    try {
+        if (!token) {
+            return res.status(401).json({ message: "no se proporcionó un token" })
+        }
+        auth = jwt.decode(token, "secretKey")
+        req.userId = auth.userId
+        const userId = req.userId
+        const productsByCashier = await prisma.$queryRaw`SELECT u.username AS cashierName, p.name AS productName, SUM(ps.quantity) AS quantitySale FROM Product p INNER JOIN ProductSale ps ON p.id = ps.productId INNER JOIN Sale s ON ps.saleId = s.id INNER JOIN User u ON u.id = s.userId WHERE DATE(s.date) = ${newdate} AND u.id = ${userId} GROUP BY u.id, p.id`
+        const groupResult = {}
+
+        productsByCashier.forEach((row) => {
+            const { cashierName, productName, quantitySale } = row
+            if (!groupResult[cashierName]) {
+                groupResult[cashierName] = []
+            }
+            groupResult[cashierName].push({ product: productName, quantity: quantitySale })
+        })
+
+        const sales = await prisma.sale.findMany({
+            where: {
+               userId: userId,
+               date: newdate
+            },
+            include: {
+                products: {
+                    select: {
+                        product: {
+                            select: {
+                                name: true
+                            }
+                        },
+                        quantity: true
+                    }
+                }
+            }
+        })
+
+        const cashes = await prisma.sale.findMany({
+            where: {
+                userId: userId,
+                method:{
+                    equals:'Cash'
+                },
+                date:new Date(date)
+            }
+        })
+        const transfers = await prisma.sale.findMany({
+            where: {
+                userId: userId,
+                method:{
+                    equals:'Transfer'
+                },
+                date: new Date(date),
+            }
+        })
+
+        const expenses = await prisma.expense.findMany({
+            where:{
+                userId: userId,
+                date: new Date(date)
+            }
+        })
+
+       
+        const dailySale = sales.reduce((total, sale) => total + sale.total, 0)
+        const onCash = cashes.reduce((total, sale) => total + sale.total, 0)
+        const onTransfer = transfers.reduce((total, sale) => total + sale.total, 0)
+        const dailyExpense = expenses.reduce((total, expense) => total + expense.total, 0)
+        const dailyReport = [{
+            dailySale: dailySale,
+            onCash: onCash,
+            onTransfer: onTransfer,
+            dailyExpense:dailyExpense
+        },
+            groupResult]
+        res.status(200).json({ message: "success", data: dailyReport, status: "ok" })
+    } catch (error) {
+        res.status(500).json({ message: "error interno" })
+    }
+}
+
 module.exports = {
     createUser,
     loginUser,
@@ -324,6 +410,7 @@ module.exports = {
     getCashier,
     getAllCashier,
     getKitchen,
-    updateCashier
+    updateCashier,
+    getHistoryCashier
 }
 

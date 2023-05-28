@@ -1,5 +1,5 @@
 const { PrismaClient } = require("@prisma/client")
-
+const jwt = require("jsonwebtoken")
 
 const prisma = new PrismaClient()
 const createSale = async (req, res, next) => {
@@ -41,13 +41,27 @@ const createSale = async (req, res, next) => {
 
         }
 
+        const token = req.headers['verification']
+        let auth = {}
+
+        if (!token) {
+            return res.status(401).json({ message: "no se proporcionó un token" })
+        }
+        auth = jwt.decode(token, "secretKey")
+        req.userId = auth.userId
+        const userId = req.userId
         const sale = await prisma.sale.create({
             data: {
                 total: total,
                 products: {
                     create: productSales
                 },
-                method: method
+                method: method,
+                user: {
+                    connect: {
+                        id: userId
+                    }
+                }
             },
             include: {
                 products: {

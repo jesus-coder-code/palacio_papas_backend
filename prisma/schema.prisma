@@ -16,6 +16,8 @@ model User {
   password   String
   role       Role           @default(Admin)
   categories CategoryUser[]
+  sales      Sale[]
+  expenses   Expense[]
 }
 
 enum Role {
@@ -59,6 +61,8 @@ model Sale {
   total    Float
   method   Method        @default(Cash)
   products ProductSale[]
+  userId   Int
+  user     User          @relation(fields: [userId], references: [id])
 }
 
 enum Method {
@@ -74,7 +78,7 @@ enum Type {
 model ProductSale {
   id        Int     @id @default(autoincrement())
   saleId    Int
-  sale      Sale    @relation(fields: [saleId], references: [id])
+  sale      Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
   productId Int
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int
@@ -117,4 +121,6 @@ model Expense {
   description String
   date        DateTime @default(now()) @db.Date
   total       Float
+  user        User    @relation(fields: [userId], references: [id])
+  userId      Int
 }

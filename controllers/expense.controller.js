@@ -1,14 +1,29 @@
 const {PrismaClient} = require("@prisma/client")
+const jwt = require("jsonwebtoken")
+
 
 const prisma = new PrismaClient()
 
 const newExpense = async (req, res) =>{
     try{
+        const token = req.headers['verification']
+        let auth = {}
+        if(!token){
+            return res.status(401).json({message:"no se proporcionó un token"})
+        }
+        auth = jwt.decode(token, "secretKey")
+        req.userId = auth.userId
+        const userId = req.userId
         const {description, total} = req.body
         const expense = await prisma.expense.create({
             data:{
                 description,
-                total
+                total,
+                user:{
+                    connect:{
+                        id: userId
+                    }
+                }
             }
         })
         if(expense){
