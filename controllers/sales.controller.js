@@ -24,21 +24,6 @@ const createSale = async (req, res, next) => {
                 subtotal: subtotal
             })
 
-            const productType = "Withstock"
-            if (productConsult.type === productType) {
-                if (productConsult.stock < quantity) {
-                    return res.status(400).json({ message: "no hay suficiente stock para el producto: " + productConsult.name })
-                }
-                await prisma.product.updateMany({
-                    where: { id },
-                    data: {
-                        stock: {
-                            decrement: quantity
-                        }
-                    }
-                })
-            }
-
         }
 
         const token = req.headers['verification']

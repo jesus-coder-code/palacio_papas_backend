@@ -11,6 +11,8 @@ const {
     getProductByName,
     createProduct,
     updateProduct,
+    newTravel,
+    getTravel,
     
 } = require("../controllers/product.controller")
 //const { blacklistToken } = require("../controllers/user.controller")
@@ -23,5 +25,8 @@ products.post("/createProduct", checkToken, verifyToken, hasRole('Admin'),upload
 
 products.put("/updateProduct/:id",checkToken, verifyToken, hasRole('Admin'), upload.any('image', 1),updateProduct)
 
+products.post("/travel/newTravel", checkToken, verifyToken, hasRole('Kitchen'), newTravel)
+
+products.get("/travel/getTravel/:date", checkToken, verifyToken, hasRole('Kitchen'), getTravel)
 
 module.exports = products

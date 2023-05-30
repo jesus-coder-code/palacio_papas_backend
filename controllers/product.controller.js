@@ -60,23 +60,23 @@ const createProduct = async (req, res) => {
     try {
         const { name, price, stock, type, categoryId } = req.body
         const filename = req.files
-        
+
         const product = await prisma.product.create({
-            data:{
+            data: {
                 name,
                 price: parseFloat(price),
                 stock: parseInt(stock),
                 type,
-                category:{
-                    connect:{
-                        id:parseInt(categoryId)
+                category: {
+                    connect: {
+                        id: parseInt(categoryId)
                     }
                 },
-                image:filename[0]
+                image: filename[0]
             }
         })
-        if(product){
-            res.status(200).json({message:"producto creado"})
+        if (product) {
+            res.status(200).json({ message: "producto creado" })
             const indice = filename[0]
             console.log(indice)
         }
@@ -98,15 +98,15 @@ const updateProduct = async (req, res) => {
             },
             data: {
                 name,
-                price:parseFloat(price),
-                stock:parseInt(stock),
+                price: parseFloat(price),
+                stock: parseInt(stock),
                 type,
                 category: {
                     connect: {
                         id: parseInt(categoryId)
                     }
                 },
-                image:filename[0]
+                image: filename[0]
             }
         })
         res.status(200).json({ message: "producto actualizado" })
@@ -116,10 +116,85 @@ const updateProduct = async (req, res) => {
     }
 }
 
+const newTravel = async (req, res) => {
+    try {
+        const { products, userId } = req.body
+        const ProductTravel = []
+        for (i of products) {
+            const { id, quantity } = i
+            const productConsult = await prisma.product.findFirst({
+                where: { id }
+            })
+            ProductTravel.push({
+                product: { connect: { id: id } },
+                quantity: quantity
+            })
+            const productType = "Withstock"
+            if (productConsult.type === productType) {
+                if (productConsult.stock < quantity) {
+                    return res.status(400).json({ message: "no hay suficiente stock para el producto: " + productConsult.name })
+                }
+                await prisma.product.updateMany({
+                    where: { id },
+                    data: {
+                        stock: {
+                            decrement: quantity
+                        }
+                    }
+                })
+            }
+        }
+
+        const travel = await prisma.travel.create({
+            data: {
+                products: {
+                    create: ProductTravel
+                },
+                user:{
+                    connect:{
+                        id:userId
+                    }
+                }
+            }
+        })
+        if(travel){
+            res.status(200).send({message:"carga de productos a cajero creada"})
+        }else{
+            res.status(400).send({message:"error al cargar productos"})
+        }
+    } catch (error) {
+        res.status(500).json({ message: "error interno" })
+        console.log(error)
+    }
+}
+
+const getTravel = async (req, res) =>{
+    try{
+        const date = req.params.date
+        const newdate = new Date(date)
+        const productsByCashier = await prisma.$queryRaw`SELECT u.username AS cashierName, p.name AS productName, SUM(pt.quantity) AS quantityTravel FROM Product p INNER JOIN ProductTravel pt ON p.id = pt.productId INNER JOIN Travel t ON pt.travelId = t.id INNER JOIN User u ON u.id = t.userId WHERE DATE(t.date) = ${newdate} GROUP BY u.id, p.id`
+
+        const groupResult = {}
+        productsByCashier.forEach((row) => {
+            const { cashierName, productName, quantityTravel } = row
+            if (!groupResult[cashierName]) {
+                groupResult[cashierName] = []
+            }
+            groupResult[cashierName].push({ product: productName, quantity: quantityTravel })
+        })
+        res.status(200).json({message:"success", data: groupResult, status:"ok"})
+
+    }catch(error){
+        res.status(500).send({message:"error interno"})
+        console.log(error)
+    }
+}
 
 module.exports = {
     getProduct,
     getProductByName,
     createProduct,
-    updateProduct
+    updateProduct,
+    newTravel,
+    getTravel
 }

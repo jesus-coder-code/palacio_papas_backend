@@ -18,6 +18,7 @@ model User {
   categories CategoryUser[]
   sales      Sale[]
   expenses   Expense[]
+  travel     Travel[]
 }
 
 enum Role {
@@ -53,6 +54,7 @@ model Product {
   category   Category          @relation(fields: [categoryId], references: [id])
   sale       ProductSale[]
   courtesy   ProductCourtesy[]
+  travel     ProductTravel[]
 }
 
 model Sale {
@@ -121,6 +123,23 @@ model Expense {
   description String
   date        DateTime @default(now()) @db.Date
   total       Float
-  user        User    @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
   userId      Int
+}
+
+model Travel {
+  id       Int             @id @default(autoincrement())
+  date     DateTime        @default(now()) @db.Date
+  products ProductTravel[]
+  user     User            @relation(fields: [userId], references: [id])
+  userId   Int
+}
+
+model ProductTravel {
+  id        Int     @id @default(autoincrement())
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+  travel    Travel  @relation(fields: [travelId], references: [id])
+  travelId  Int
+  quantity  Int
 }
