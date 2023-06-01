@@ -29,5 +29,4 @@ users.put("/cashier/updateCashier/:id", checkToken, verifyToken, hasRole('Admin'
 users.get("/cashier/getHistoryCashier/:date", checkToken, verifyToken,hasRole('Cashier'), getHistoryCashier)
 
 
-
 module.exports = users

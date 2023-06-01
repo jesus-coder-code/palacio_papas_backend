@@ -1,5 +1,6 @@
 const { PrismaClient } = require("@prisma/client")
 const prisma = new PrismaClient()
+const jwt = require("jsonwebtoken")
 const multer = require("multer")
 const FormData = require("form-data")
 
@@ -150,17 +151,17 @@ const newTravel = async (req, res) => {
                 products: {
                     create: ProductTravel
                 },
-                user:{
-                    connect:{
-                        id:userId
+                user: {
+                    connect: {
+                        id: userId
                     }
                 }
             }
         })
-        if(travel){
-            res.status(200).send({message:"carga de productos a cajero creada"})
-        }else{
-            res.status(400).send({message:"error al cargar productos"})
+        if (travel) {
+            res.status(200).send({ message: "carga de productos a cajero creada" })
+        } else {
+            res.status(400).send({ message: "error al cargar productos" })
         }
     } catch (error) {
         res.status(500).json({ message: "error interno" })
@@ -168,8 +169,8 @@ const newTravel = async (req, res) => {
     }
 }
 
-const getTravel = async (req, res) =>{
-    try{
+const getTravel = async (req, res) => {
+    try {
         const date = req.params.date
         const newdate = new Date(date)
         const productsByCashier = await prisma.$queryRaw`SELECT u.username AS cashierName, p.name AS productName, SUM(pt.quantity) AS quantityTravel FROM Product p INNER JOIN ProductTravel pt ON p.id = pt.productId INNER JOIN Travel t ON pt.travelId = t.id INNER JOIN User u ON u.id = t.userId WHERE DATE(t.date) = ${newdate} GROUP BY u.id, p.id`
@@ -182,10 +183,40 @@ const getTravel = async (req, res) =>{
             }
             groupResult[cashierName].push({ product: productName, quantity: quantityTravel })
         })
-        res.status(200).json({message:"success", data: groupResult, status:"ok"})
+        res.status(200).json({ message: "success", data: groupResult, status: "ok" })
 
-    }catch(error){
-        res.status(500).send({message:"error interno"})
+    } catch (error) {
+        res.status(500).send({ message: "error interno" })
+        console.log(error)
+    }
+}
+
+const deleteTravel = async (req, res) => {
+    try {
+        const token = req.headers['verification']
+        const date = req.params.date
+        const newdate = new Date(date)
+        let auth = {}
+        const { id } = req.params
+
+        if (!token) {
+            return res.status(401).json({ message: "no se proporcionó un token" })
+        }
+        auth = jwt.decode(token, "secretKey")
+        req.userId = auth.userId
+        const userId = req.userId
+        const drop = await prisma.travel.delete({
+            where: {
+                id: parseInt(id),
+            }
+        })
+        if (drop) {
+            res.status(200).send({ message: "carga eliminada" })
+        } else {
+            res.status(400).send({ message: "error al eliminar la carga" })
+        }
+    } catch (error) {
+        res.status(500).send({ message: "error interno" })
         console.log(error)
     }
 }
@@ -196,5 +227,6 @@ module.exports = {
     createProduct,
     updateProduct,
     newTravel,
-    getTravel
+    getTravel,
+    deleteTravel
 }

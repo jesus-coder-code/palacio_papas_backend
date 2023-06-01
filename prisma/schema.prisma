@@ -139,7 +139,7 @@ model ProductTravel {
   id        Int     @id @default(autoincrement())
   product   Product @relation(fields: [productId], references: [id])
   productId Int
-  travel    Travel  @relation(fields: [travelId], references: [id])
+  travel    Travel  @relation(fields: [travelId], references: [id], onDelete: Cascade)
   travelId  Int
   quantity  Int
 }

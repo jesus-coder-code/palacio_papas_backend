@@ -340,8 +340,8 @@ const getHistoryCashier = async (req, res) => {
 
         const sales = await prisma.sale.findMany({
             where: {
-               userId: userId,
-               date: newdate
+                userId: userId,
+                date: newdate
             },
             include: {
                 products: {
@@ -360,30 +360,30 @@ const getHistoryCashier = async (req, res) => {
         const cashes = await prisma.sale.findMany({
             where: {
                 userId: userId,
-                method:{
-                    equals:'Cash'
+                method: {
+                    equals: 'Cash'
                 },
-                date:new Date(date)
+                date: new Date(date)
             }
         })
         const transfers = await prisma.sale.findMany({
             where: {
                 userId: userId,
-                method:{
-                    equals:'Transfer'
+                method: {
+                    equals: 'Transfer'
                 },
                 date: new Date(date),
             }
         })
 
         const expenses = await prisma.expense.findMany({
-            where:{
+            where: {
                 userId: userId,
                 date: new Date(date)
             }
         })
 
-       
+
         const dailySale = sales.reduce((total, sale) => total + sale.total, 0)
         const onCash = cashes.reduce((total, sale) => total + sale.total, 0)
         const onTransfer = transfers.reduce((total, sale) => total + sale.total, 0)
@@ -392,7 +392,7 @@ const getHistoryCashier = async (req, res) => {
             dailySale: dailySale,
             onCash: onCash,
             onTransfer: onTransfer,
-            dailyExpense:dailyExpense
+            dailyExpense: dailyExpense
         },
             groupResult]
         res.status(200).json({ message: "success", data: dailyReport, status: "ok" })
@@ -400,6 +400,9 @@ const getHistoryCashier = async (req, res) => {
         res.status(500).json({ message: "error interno" })
     }
 }
+
+
+
 
 module.exports = {
     createUser,
@@ -411,6 +414,6 @@ module.exports = {
     getAllCashier,
     getKitchen,
     updateCashier,
-    getHistoryCashier
+    getHistoryCashier,
 }
 

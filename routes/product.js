@@ -13,6 +13,7 @@ const {
     updateProduct,
     newTravel,
     getTravel,
+    deleteTravel,
     
 } = require("../controllers/product.controller")
 //const { blacklistToken } = require("../controllers/user.controller")
@@ -28,5 +29,7 @@ products.put("/updateProduct/:id",checkToken, verifyToken, hasRole('Admin'), upl
 products.post("/travel/newTravel", checkToken, verifyToken, hasRole('Kitchen'), newTravel)
 
 products.get("/travel/getTravel/:date", checkToken, verifyToken, hasRole('Kitchen'), getTravel)
+
+products.delete("/travel/deleteTravel/:id", checkToken, verifyToken, hasRole('Kitchen'), deleteTravel)
 
 module.exports = products

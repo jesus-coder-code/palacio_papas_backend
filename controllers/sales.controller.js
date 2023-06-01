@@ -94,7 +94,80 @@ const getSale = async (req, res) => {
             }
         })
         //res.status(200).json({ data: sale, message: "success" })
-        res.status(200).send(sale)
+        res.status(200).send({message:"success", data: sale, status:"OK"})
+    } catch (error) {
+        res.status(500).json({ message: "error interno" })
+        console.log(error)
+    }
+}
+
+const deleteSale = async (req, res) => {
+    try{
+        const token = req.headers['verification']
+        const date = req.params.date
+        const newdate = new Date(date)
+        let auth = {}
+        const {id} = req.params
+
+        if (!token) {
+            return res.status(401).json({ message: "no se proporcionó un token" })
+        }
+        auth = jwt.decode(token, "secretKey")
+        req.userId = auth.userId
+        const userId = req.userId
+        const drop = await prisma.sale.delete({
+            where:{
+                id: parseInt(id),
+            }
+        })
+        if(drop){
+            res.status(200).send({message:"venta eliminada"})
+        }else{
+            res.status(400).send({message:"error al eliminar la venta"})
+        }
+    }catch(error){
+        res.status(500).send({message:"error interno"})
+        console.log(error)
+    }
+}
+
+const getHistorySale = async (req, res) => {
+    try {
+        const token = req.headers['verification']
+        const date = req.params.date
+        const newdate = new Date(date)
+        let auth = {}
+
+        if (!token) {
+            return res.status(401).json({ message: "no se proporcionó un token" })
+        }
+        auth = jwt.decode(token, "secretKey")
+        req.userId = auth.userId
+        const userId = req.userId
+        const sale = await prisma.sale.findMany({
+            where: {
+                userId: userId
+            },
+            include: {
+                products: {
+                    select: {
+                        product: {
+                            select: {
+                                name: true,
+                                price: true
+                            }
+                        },
+                        quantity: true,
+                        subtotal: true
+                    }
+                }
+            },
+            orderBy: {
+                id: "desc"
+            }
+        })
+        //res.status(200).json({ data: sale, message: "success" })
+        res.status(200).send({message:"success", data:sale, status:"OK"})
     } catch (error) {
         res.status(500).json({ message: "error interno" })
         console.log(error)
@@ -102,8 +175,9 @@ const getSale = async (req, res) => {
 }
 
 
-
 module.exports = {
     createSale,
-    getSale
+    getSale,
+    deleteSale,
+    getHistorySale
 }
