@@ -49,7 +49,7 @@ model Product {
   price      Float
   stock      Int?
   type       Type
-  image      Json              @db.Json
+  image      Json?              @db.Json
   categoryId Int
   category   Category          @relation(fields: [categoryId], references: [id])
   sale       ProductSale[]
