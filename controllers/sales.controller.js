@@ -103,18 +103,7 @@ const getSale = async (req, res) => {
 
 const deleteSale = async (req, res) => {
     try{
-        const token = req.headers['verification']
-        const date = req.params.date
-        const newdate = new Date(date)
-        let auth = {}
         const {id} = req.params
-
-        if (!token) {
-            return res.status(401).json({ message: "no se proporcionó un token" })
-        }
-        auth = jwt.decode(token, "secretKey")
-        req.userId = auth.userId
-        const userId = req.userId
         const drop = await prisma.sale.delete({
             where:{
                 id: parseInt(id),
