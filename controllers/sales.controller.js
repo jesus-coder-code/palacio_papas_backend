@@ -74,27 +74,67 @@ const createSale = async (req, res, next) => {
 
 const getSale = async (req, res) => {
     try {
-        const sale = await prisma.sale.findMany({
-            include: {
-                products: {
-                    select: {
-                        product: {
-                            select: {
-                                name: true,
-                                price: true
-                            }
-                        },
-                        quantity: true,
-                        subtotal: true
+        const token = req.headers['verification']
+        const date = req.params.date
+        const newdate = new Date(date)
+        let auth = {}
+
+        if (!token) {
+            return res.status(401).json({ message: "no se proporcionó un token" })
+        }
+        auth = jwt.decode(token, "secretKey")
+        req.userId = auth.userId
+        req.userRole = auth.role
+        const userId = req.userId
+        const userRole = req.userRole
+        if (userRole === 'Admin') {
+            const sale = await prisma.sale.findMany({
+                include: {
+                    products: {
+                        select: {
+                            product: {
+                                select: {
+                                    name: true,
+                                    price: true
+                                }
+                            },
+                            quantity: true,
+                            subtotal: true
+                        }
                     }
+                },
+                orderBy: {
+                    id: "desc"
                 }
-            },
-            orderBy: {
-                id: "desc"
-            }
-        })
+            })
+            return res.status(200).json({ data: sale, message: "success" })
+        } else if (userRole === 'Cashier') {
+            const sale = await prisma.sale.findMany({
+                where: {
+                    userId: userId
+                },
+                include: {
+                    products: {
+                        select: {
+                            product: {
+                                select: {
+                                    name: true,
+                                    price: true
+                                }
+                            },
+                            quantity: true,
+                            subtotal: true
+                        }
+                    }
+                },
+                orderBy: {
+                    id: "desc"
+                }
+            })
+            return res.status(200).json({ data: sale, message: "success" })
+        }
         //res.status(200).json({ data: sale, message: "success" })
-        res.status(200).send({message:"success", data: sale, status:"OK"})
+        //res.status(200).send({message:"success", data: sale, status:"OK"})
     } catch (error) {
         res.status(500).json({ message: "error interno" })
         console.log(error)
@@ -102,20 +142,20 @@ const getSale = async (req, res) => {
 }
 
 const deleteSale = async (req, res) => {
-    try{
-        const {id} = req.params
+    try {
+        const { id } = req.params
         const drop = await prisma.sale.delete({
-            where:{
+            where: {
                 id: parseInt(id),
             }
         })
-        if(drop){
-            res.status(200).send({message:"venta eliminada"})
-        }else{
-            res.status(400).send({message:"error al eliminar la venta"})
+        if (drop) {
+            res.status(200).send({ message: "venta eliminada" })
+        } else {
+            res.status(400).send({ message: "error al eliminar la venta" })
         }
-    }catch(error){
-        res.status(500).send({message:"error interno"})
+    } catch (error) {
+        res.status(500).send({ message: "error interno" })
         console.log(error)
     }
 }
@@ -156,7 +196,7 @@ const getHistorySale = async (req, res) => {
             }
         })
         //res.status(200).json({ data: sale, message: "success" })
-        res.status(200).send({message:"success", data:sale, status:"OK"})
+        res.status(200).send({ message: "success", data: sale, status: "OK" })
     } catch (error) {
         res.status(500).json({ message: "error interno" })
         console.log(error)
