@@ -5,7 +5,7 @@ const {createSale, getSale, earnReport, getHistorySale, deleteSale} = require(".
 
 sales.get("/getSales", checkToken, verifyToken, getSale)
 sales.post("/createSale", checkToken, verifyToken, createSale)
-sales.get("/getHistorySale", checkToken, verifyToken, hasRole('Cashier'), getHistorySale)
+//sales.get("/getHistorySale", checkToken, verifyToken, hasRole('Cashier'), getHistorySale)
 sales.delete("/deleteSale/:id", checkToken, verifyToken, hasRole('Cashier'), deleteSale)
 
 module.exports = sales

@@ -169,7 +169,7 @@ const newTravel = async (req, res) => {
     }
 }
 
-const getTravel = async (req, res) => {
+const getTravelByDate = async (req, res) => {
     try {
         const date = req.params.date
         const newdate = new Date(date)
@@ -221,6 +221,10 @@ const deleteTravel = async (req, res) => {
     }
 }
 
+const getTravel = async (req, res) =>{
+    const travel = await prisma.travel.findMany({})
+}
+
 module.exports = {
     getProduct,
     getProductByName,
@@ -228,5 +232,6 @@ module.exports = {
     updateProduct,
     newTravel,
     getTravel,
-    deleteTravel
+    deleteTravel,
+    getTravelByDate
 }
