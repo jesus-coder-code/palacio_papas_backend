@@ -37,7 +37,7 @@ const createSale = async (req, res, next) => {
         const userId = req.userId
         const sale = await prisma.sale.create({
             data: {
-                date: new Date(),
+                //date: new Date(),
                 total: total,
                 products: {
                     create: productSales
