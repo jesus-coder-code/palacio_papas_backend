@@ -75,6 +75,36 @@ const createSale = async (req, res, next) => {
 
 const getSale = async (req, res) => {
     try {
+
+        const sale = await prisma.sale.findMany({
+            include: {
+                products: {
+                    select: {
+                        product: {
+                            select: {
+                                name: true,
+                                price: true
+                            }
+                        },
+                        quantity: true,
+                        subtotal: true
+                    }
+                }
+            },
+            orderBy: {
+                id: "desc"
+            }
+        })
+        return res.status(200).json({ data: sale, message: "success" })
+
+    } catch (error) {
+        res.status(500).json({ message: "error interno" })
+        console.log(error)
+    }
+}
+
+const getSaleByCashier = async (req, res) => {
+    try {
         const token = req.headers['verification']
         const date = req.params.date
         const newdate = new Date(date)
@@ -88,61 +118,37 @@ const getSale = async (req, res) => {
         req.userRole = auth.role
         const userId = req.userId
         const userRole = req.userRole
-        if (userRole === 'Admin') {
-            const sale = await prisma.sale.findMany({
-                include: {
-                    products: {
-                        select: {
-                            product: {
-                                select: {
-                                    name: true,
-                                    price: true
-                                }
-                            },
-                            quantity: true,
-                            subtotal: true
-                        }
+
+        const sale = await prisma.sale.findMany({
+            where: {
+                userId: userId
+            },
+            include: {
+                products: {
+                    select: {
+                        product: {
+                            select: {
+                                name: true,
+                                price: true
+                            }
+                        },
+                        quantity: true,
+                        subtotal: true
                     }
-                },
-                orderBy: {
-                    id: "desc"
                 }
-            })
-            return res.status(200).json({ data: sale, message: "success" })
-        } else if (userRole === 'Cashier') {
-            const sale = await prisma.sale.findMany({
-                where: {
-                    userId: userId
-                },
-                include: {
-                    products: {
-                        select: {
-                            product: {
-                                select: {
-                                    name: true,
-                                    price: true
-                                }
-                            },
-                            quantity: true,
-                            subtotal: true
-                        }
-                    }
-                },
-                orderBy: {
-                    id: "desc"
-                }
-            })
-            return res.status(200).json({ data: sale, message: "success" })
-        }else{
-            return res.status(403).send({message:"no estas autorizado"})
-        }
-        //res.status(200).json({ data: sale, message: "success" })
-        //res.status(200).send({message:"success", data: sale, status:"OK"})
+            },
+            orderBy: {
+                id: "desc"
+            }
+        })
+        return res.status(200).json({ data: sale, message: "success" })
     } catch (error) {
-        res.status(500).json({ message: "error interno" })
+        res.status(500).send({ message: "error interno" })
         console.log(error)
     }
+
 }
+
 
 const deleteSale = async (req, res) => {
     try {
@@ -170,4 +176,5 @@ module.exports = {
     createSale,
     getSale,
     deleteSale,
+    getSaleByCashier
 }
