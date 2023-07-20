@@ -39,7 +39,27 @@ const getPayments = async (req, res) => {
     }
 }
 
+const deletePayment = async (req, res) => {
+    try {
+        const { id } = req.params
+        const deletePayment = await prisma.payment.delete({
+            where: {
+                id: parseInt(id)
+            },
+        })
+        if(deletePayment){
+            res.status(200).send({message:"pago eliminado"})
+        }else{
+            res.status(400).send({message:"error al eliminar el pago"})
+        }
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({ message: "error interno" })
+    }
+}
+
 module.exports = {
     newPayment,
-    getPayments
+    getPayments,
+    deletePayment
 }
