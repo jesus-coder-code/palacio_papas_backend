@@ -185,7 +185,7 @@ const reportByCashier = async (req, res) => {
             dailyExpense: dailyExpense
         },
             groupResult]
-        res.status(200).json({ message: "success", data: dailyReport, status: "ok" })
+        res.status(200).send([{ message: "success", data: dailyReport, status: "ok" }])
     } catch (error) {
         console.log(error)
         res.status(500).send({ message: "error interno" })
@@ -209,7 +209,7 @@ const productsByCashier = async (req, res) => {
             groupResult[cashierName].push({ product: productName, quantity: quantitySale })
         })
 
-        res.status(200).json({ message: "success", data: groupResult, status: "ok" })
+        res.status(200).send([{ message: "success", data: groupResult, status: "ok" }])
     } catch (error) {
         res.status(500).json({ message: "error interno" })
         console.log(error)
