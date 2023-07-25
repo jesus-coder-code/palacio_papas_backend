@@ -117,15 +117,15 @@ const reportByCashier = async (req, res) => {
         req.userRole = auth.role
         const userId = req.userId
         const userRole = req.userRole
-        const productsByCashier = await prisma.$queryRaw`SELECT u.username AS cashierName, p.name AS productName, SUM(ps.quantity) AS quantitySale FROM Product p INNER JOIN ProductSale ps ON p.id = ps.productId INNER JOIN Sale s ON ps.saleId = s.id INNER JOIN User u ON u.id = s.userId WHERE DATE(s.date) = ${newdate} AND u.id = ${userId} GROUP BY u.id, p.id`
+        const productsByCashier = await prisma.$queryRaw`SELECT p.name AS productName, SUM(ps.quantity) AS quantitySale FROM Product p INNER JOIN ProductSale ps ON p.id = ps.productId INNER JOIN Sale s ON ps.saleId = s.id INNER JOIN User u ON u.id = s.userId WHERE DATE(s.date) = ${newdate} AND u.id = ${userId} GROUP BY u.id, p.id`
         const groupResult = {}
-
+        console.log(productsByCashier)
         productsByCashier.forEach((row) => {
-            const { cashierName, productName, quantitySale } = row
-            if (!groupResult[cashierName]) {
-                groupResult[cashierName] = []
+            const { Products, productName, quantitySale } = row
+            if (!groupResult[Products]) {
+                groupResult[Products] = []
             }
-            groupResult[cashierName].push({ product: productName, quantity: quantitySale })
+            groupResult[Products].push({ product: productName, quantity: quantitySale })
         })
 
         const sales = await prisma.sale.findMany({
@@ -182,9 +182,10 @@ const reportByCashier = async (req, res) => {
             totalDailySale: dailySale,
             totalOnCash: onCash,
             totalOnTransfer: onTransfer,
-            totalDailyExpense: dailyExpense
+            totalDailyExpense: dailyExpense,
+            productSale:productsByCashier
         },
-            groupResult]
+        ]
         res.status(200).send([{ message: "success", data: dailyReport, status: "ok" }])
     } catch (error) {
         console.log(error)
@@ -197,16 +198,16 @@ const productsByCashier = async (req, res) => {
         const date = req.params.date
         const newdate = new Date(date)
         //const quantityByProduct = await prisma.$queryRaw`SELECT p.name AS productName, SUM(ps.quantity) AS quantitySale FROM Product p INNER JOIN ProductSale ps ON p.id = ps.productId INNER JOIN Sale s ON ps.saleId = s.id WHERE DATE(s.date) = ${newdate} GROUP BY p.name`
-        const productsByCashier = await prisma.$queryRaw`SELECT u.username AS cashierName, p.name AS productName, SUM(ps.quantity) AS quantitySale FROM Product p INNER JOIN ProductSale ps ON p.id = ps.productId INNER JOIN Sale s ON ps.saleId = s.id INNER JOIN User u ON u.id = s.userId WHERE DATE(s.date) = ${newdate} GROUP BY u.id, p.id`
+        const productsByCashier = await prisma.$queryRaw`SELECT p.name AS productName, SUM(ps.quantity) AS quantitySale FROM Product p INNER JOIN ProductSale ps ON p.id = ps.productId INNER JOIN Sale s ON ps.saleId = s.id INNER JOIN User u ON u.id = s.userId WHERE DATE(s.date) = ${newdate} GROUP BY p.id`
 
         const groupResult = {}
 
         productsByCashier.forEach((row) => {
-            const { cashierName, productName, quantitySale } = row
-            if (!groupResult[cashierName]) {
-                groupResult[cashierName] = []
+            const { Products, productName, quantitySale } = row
+            if (!groupResult[Products]) {
+                groupResult[Products] = []
             }
-            groupResult[cashierName].push({ product: productName, quantity: quantitySale })
+            groupResult[Products].push({ product: productName, quantity: quantitySale })
         })
 
         res.status(200).send([{ message: "success", data: groupResult, status: "ok" }])
