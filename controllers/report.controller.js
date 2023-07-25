@@ -75,7 +75,7 @@ const dailyReport = async (req, res) => {
         const discount = {
             dailyExpense: dailyExpense,
             dailyPayment: dailyPayment,
-            dailyCourtesy: dailyCourtesy
+            //dailyCourtesy: dailyCourtesy
         }
         //const dailySale = onCash + onTransfer
         let totalDiscount = 0
@@ -179,10 +179,10 @@ const reportByCashier = async (req, res) => {
         const onTransfer = transfers.reduce((total, sale) => total + sale.total, 0)
         const dailyExpense = expenses.reduce((total, expense) => total + expense.total, 0)
         const dailyReport = [{
-            dailySale: dailySale,
-            onCash: onCash,
-            onTransfer: onTransfer,
-            dailyExpense: dailyExpense
+            totalDailySale: dailySale,
+            totalOnCash: onCash,
+            totalOnTransfer: onTransfer,
+            totalDailyExpense: dailyExpense
         },
             groupResult]
         res.status(200).send([{ message: "success", data: dailyReport, status: "ok" }])
