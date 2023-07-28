@@ -118,7 +118,7 @@ const reportByCashier = async (req, res) => {
         const userId = req.userId
         const userRole = req.userRole
         const productsByCashier = await prisma.$queryRaw`SELECT p.name AS productName, SUM(ps.quantity) AS quantitySale FROM Product p INNER JOIN ProductSale ps ON p.id = ps.productId INNER JOIN Sale s ON ps.saleId = s.id INNER JOIN User u ON u.id = s.userId WHERE DATE(s.date) = ${newdate} AND u.id = ${userId} GROUP BY u.id, p.id`
-        const groupResult = {}
+        /*const groupResult = {}
         console.log(productsByCashier)
         productsByCashier.forEach((row) => {
             const { Products, productName, quantitySale } = row
@@ -126,7 +126,7 @@ const reportByCashier = async (req, res) => {
                 groupResult[Products] = []
             }
             groupResult[Products].push({ product: productName, quantity: quantitySale })
-        })
+        })*/
 
         const sales = await prisma.sale.findMany({
             where: {
@@ -183,7 +183,7 @@ const reportByCashier = async (req, res) => {
             totalOnCash: onCash,
             totalOnTransfer: onTransfer,
             totalDailyExpense: dailyExpense,
-            productSale:productsByCashier
+            quantityByProduct:productsByCashier
         },
         ]
         res.status(200).send([{ message: "success", data: dailyReport, status: "ok" }])
