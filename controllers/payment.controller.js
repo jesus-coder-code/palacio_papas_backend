@@ -26,7 +26,11 @@ const newPayment = async (req, res) => {
 
 const getPayments = async (req, res) => {
     try{
-        const payment = await prisma.payment.findMany()
+        const payment = await prisma.payment.findMany({
+            orderBy:{
+                id:"desc"
+            }
+        })
         if(payment){
             res.status(200).json({message:"success", data: payment, status:"ok"})
 

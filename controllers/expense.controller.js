@@ -39,7 +39,11 @@ const newExpense = async (req, res) => {
 
 const getExpense = async (req, res) => {
     try {
-        const expense = await prisma.expense.findMany()
+        const expense = await prisma.expense.findMany({
+            orderBy:{
+                id:"desc"
+            }
+        })
         if (expense) {
             res.status(200).json({ message: "success", data: expense, status: "ok" })
         }
@@ -63,6 +67,9 @@ const getExpenseByUser = async (req, res) => {
         const expense = await prisma.expense.findMany({
             where: {
                 userId: userId
+            },
+            orderBy:{
+                id:"desc"
             }
         })
 
