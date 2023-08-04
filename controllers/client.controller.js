@@ -101,6 +101,11 @@ const getCourtesy = async (req, res) =>{
     try{
         const courtesy = await prisma.courtesy.findMany({
             include:{
+                client:{
+                    select:{
+                        name: true
+                    }
+                },
                 products:{
                     select:{
                         product:{
