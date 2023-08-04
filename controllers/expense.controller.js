@@ -40,6 +40,13 @@ const newExpense = async (req, res) => {
 const getExpense = async (req, res) => {
     try {
         const expense = await prisma.expense.findMany({
+            include:{
+                user:{
+                    select:{
+                        username:true
+                    }
+                }
+            },
             orderBy:{
                 id:"desc"
             }
