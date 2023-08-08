@@ -175,14 +175,33 @@ const getTravelByDate = async (req, res) => {
         const newdate = new Date(date)
         const productsByCashier = await prisma.$queryRaw`SELECT u.username AS cashierName, p.name AS productName, SUM(pt.quantity) AS quantityTravel FROM Product p INNER JOIN ProductTravel pt ON p.id = pt.productId INNER JOIN Travel t ON pt.travelId = t.id INNER JOIN User u ON u.id = t.userId WHERE DATE(t.date) = ${newdate} GROUP BY u.id, p.id`
 
-        const groupResult = {}
+        /*const groupResult = {}
         productsByCashier.forEach((row) => {
             const { cashierName, productName, quantityTravel } = row
             if (!groupResult[cashierName]) {
                 groupResult[cashierName] = []
             }
             groupResult[cashierName].push({ product: productName, quantity: quantityTravel })
-        })
+        })*/
+        const groupResult = [];
+
+        productsByCashier.forEach((row) => {
+            const { cashierName, productName, quantityTravel } = row;
+
+            // Buscar si el cajero ya existe en groupResult
+            const existingCashier = groupResult.find(item => item.cashier === cashierName);
+
+            if (existingCashier) {
+                // Si el cajero ya existe, agregar el producto y cantidad al cajero existente
+                existingCashier.products.push({ product: productName, quantity: quantityTravel });
+            } else {
+                // Si el cajero no existe, agregar un nuevo objeto de cajero al arreglo
+                groupResult.push({
+                    cashier: cashierName,
+                    products: [{ product: productName, quantity: quantityTravel }]
+                });
+            }
+        });
         res.status(200).json({ message: "success", data: groupResult, status: "ok" })
 
     } catch (error) {
@@ -221,8 +240,28 @@ const deleteTravel = async (req, res) => {
     }
 }
 
-const getTravel = async (req, res) =>{
-    const travel = await prisma.travel.findMany({})
+const getTravel = async (req, res) => {
+    const travel = await prisma.travel.findMany({
+        include: {
+            user: {
+                select: {
+                    username: true
+                }
+            },
+            products: {
+                select: {
+                    product: {
+                        select: {
+                            name: true
+                        }
+                    },
+                    quantity: true
+                }
+            }
+        },
+        orderBy: { id: "desc" }
+    })
+    res.status(200).json({ data: travel, message: "success" })
 }
 
 module.exports = {
