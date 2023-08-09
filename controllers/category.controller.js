@@ -35,7 +35,7 @@ const getCategory = async (req, res) => {
         req.role = auth.role
         const role = req.role
         const userId = req.userId
-        if (role === "Kitchen") {
+        if (role !== "Kitchen") {
             res.status(200).json({ message: "esta es la cocina" })
         } else {
             const category = await prisma.category.findMany({
