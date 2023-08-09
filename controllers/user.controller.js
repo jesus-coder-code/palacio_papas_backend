@@ -279,36 +279,42 @@ const getCashier = async (req, res, next) => {
         }
         auth = jwt.decode(token, "secretKey")
         req.userId = auth.userId
+        req.role = auth.role
+        const role = req.role
         const userId = req.userId
         console.log(userId)
-        const datos = await prisma.user.findUnique({
-            where: {
-                id: userId
-            },
-            select: {
-                id: true,
-                username: true,
-                categories: {
-                    select: {
-                        category: {
-                            select: {
-                                id: true,
-                                name: true,
-                                products: {
-                                    select: {
-                                        id: true,
-                                        name: true,
-                                        price: true,
+        if (role === "Kitchen") {
+            res.status(200).send({ message: "esta es la cocina" })
+        } else {
+            const datos = await prisma.user.findUnique({
+                where: {
+                    id: userId
+                },
+                select: {
+                    id: true,
+                    username: true,
+                    categories: {
+                        select: {
+                            category: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    products: {
+                                        select: {
+                                            id: true,
+                                            name: true,
+                                            price: true,
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
-        })
-        const datas = [datos]
-        res.status(200).json({ message: "success", data: datas, status: "ok" })
+            })
+            const datas = [datos]
+            res.status(200).json({ message: "success", data: datas, status: "ok" })
+        }
     } catch (error) {
         res.status(500).json({ message: "error interno" })
         console.log(error)
