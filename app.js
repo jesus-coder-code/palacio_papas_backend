@@ -12,8 +12,12 @@ const payments = require("./routes/payment");
 const expense = require("./routes/expense");
 const port = process.env.PORT || 3000
 //require("./database/database")
+const swaggerUi = require('swagger-ui-express')
+const swaggerDocument = require('./swagger-output.json')
 
 const app = express()
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use(cookieParser())
 
